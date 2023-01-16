@@ -7,7 +7,7 @@ public class PlayerTrail : MonoBehaviour
 {
     private TrailRenderer[] trails;
     [SerializeField] private AnimationCurve alphaCurve;
-    [SerializeField] private float fadeOutTime = 1f;
+    //[SerializeField] private float fadeOutTime = 1f;
    
 
     private TrailAttributesSync trailAttributes;
@@ -46,22 +46,20 @@ public class PlayerTrail : MonoBehaviour
 
     void Update()
     { 
-        if (trailAttributes.currentLifeTime > 0f)
+        if (trailAttributes.lifeTime > 0f)
         {
             if (isOwner)
             {
-                trailAttributes.currentLifeTime -= Time.deltaTime;
+                trailAttributes.lifeTime -= Time.deltaTime;
                 IsActive = true;
-                if (trailAttributes.currentLifeTime < 0f)
+                if (trailAttributes.lifeTime < 0f)
                 {
-                    trailAttributes.currentLifeTime = 0f;
+                    trailAttributes.lifeTime = 0f;
                     IsActive = false;
                 }
             }
-            UpdateTrails((fadeOutTime - trailAttributes.currentLifeTime) / fadeOutTime);
+            UpdateTrails((trailAttributes.fadeOutTime - trailAttributes.lifeTime) / trailAttributes.fadeOutTime);
         }
-      
-
     }
     public void InactivateTrails()
     {
@@ -71,10 +69,13 @@ public class PlayerTrail : MonoBehaviour
         }
     }
 
-    public void ActivateTrails()
+    public void ActivateTrails(int newFadeOutTime = 1)
     {
         if (isOwner)
-            trailAttributes.currentLifeTime = fadeOutTime;
+        {
+            trailAttributes.fadeOutTime = newFadeOutTime;
+            trailAttributes.lifeTime = newFadeOutTime;
+        }
     }
 
 

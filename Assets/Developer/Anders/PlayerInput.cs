@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
@@ -9,6 +10,7 @@ public class PlayerInput : MonoBehaviour
     private float tapInterval = 0.2f;
     public Action<KeyCode> OnKeyDoubleTapped = null;
     public Action OnJumpAttempt = null;
+    public Action OnAbilityAttempt = null;
 
     private Dictionary<KeyCode, float> keyTimestamps = new()
     {
@@ -39,6 +41,11 @@ public class PlayerInput : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 OnJumpAttempt();
+            }
+
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                OnAbilityAttempt();
             }
         }
     }
