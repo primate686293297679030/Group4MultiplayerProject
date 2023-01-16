@@ -1,13 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
+
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject winningUI;
     [SerializeField] private GameObject losingUI;
-    public static GameManager instance; 
+    public static GameManager instance;
+
 
     void Awake()
     {
@@ -19,8 +20,14 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(this);
+            return;
         }
+
+        Application.targetFrameRate = 120;
+        QualitySettings.vSyncCount = 0;
+        PlayerControllerTest.OnPlayerJoined += (avatar) => { Debug.Log(avatar.name + " has joined!"); };
     }
+
     public static void OnWin(GameObject winner)
     {
         SmoothCamera camera = Camera.main.GetComponent<SmoothCamera>();
@@ -30,7 +37,7 @@ public class GameManager : MonoBehaviour
             Camera.main.GetComponent<SmoothCamera>().Target = winner.transform;
         }
 
-        var playerControllers = Object.FindObjectsOfType<PlayerControllerTest>();
+        var playerControllers = FindObjectsOfType<PlayerControllerTest>();
         foreach (var controller in playerControllers)
         {
             if (controller.gameObject != winner)
