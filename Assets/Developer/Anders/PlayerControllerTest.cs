@@ -2,13 +2,14 @@ using System;
 using Alteruna;
 using System.Collections;
 using UnityEngine;
+using Avatar = Alteruna.Avatar;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = System.Numerics.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
 public class PlayerControllerTest : MonoBehaviour
 {
-    public static Action<Transform> OnPlayerJoined = delegate(Transform user) {  };
+    public static Action<Avatar> OnPlayerJoined = delegate(Avatar user) {  };
 
     [HideInInspector] public bool Activated;
     [HideInInspector] public float slowMultiplier = 1f;
@@ -24,7 +25,7 @@ public class PlayerControllerTest : MonoBehaviour
     [SerializeField] private AnimationCurve dashCurve;
     [SerializeField] private AnimationCurve jumpDashCurve;
 
-    private Alteruna.Avatar avatar;
+    private Avatar avatar;
     private CharacterController characterController;
     private MeshRenderer meshRenderer;
     private PlayerTrail trailManager;
@@ -38,7 +39,7 @@ public class PlayerControllerTest : MonoBehaviour
     void Start()
     {
         // Get components
-        avatar = GetComponent<Alteruna.Avatar>();
+        avatar = GetComponent<Avatar>();
         meshRenderer = GetComponentInChildren<MeshRenderer>();
         characterController = GetComponentInChildren<CharacterController>();
         trailManager = GetComponentInChildren<PlayerTrail>();
@@ -88,7 +89,7 @@ public class PlayerControllerTest : MonoBehaviour
         gameObject.name = "Player" + avatar.Possessor.Index;
         trailManager.Initialize(avatar.IsMe);
         Activated = true;
-        OnPlayerJoined.Invoke(transform);
+        OnPlayerJoined.Invoke(avatar);
     }
 
     void Update()

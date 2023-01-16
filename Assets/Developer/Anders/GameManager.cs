@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
 
         Application.targetFrameRate = 120;
         QualitySettings.vSyncCount = 0;
-        PlayerControllerTest.OnPlayerJoined += (trans) => { Debug.Log(trans.name + " has joined!"); };
+        PlayerControllerTest.OnPlayerJoined += (avatar) => { Debug.Log(avatar.name + " has joined!"); };
     }
 
     public static void OnWin(GameObject winner)
