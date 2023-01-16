@@ -8,7 +8,7 @@ using Vector3 = UnityEngine.Vector3;
 
 public class PlayerControllerTest : MonoBehaviour
 {
-    public static Action<User> OnPlayerJoined = delegate(User user) {  };
+    public static Action<Transform> OnPlayerJoined = delegate(Transform user) {  };
 
     [HideInInspector] public bool Activated;
     [HideInInspector] public float slowMultiplier = 1f;
@@ -88,7 +88,7 @@ public class PlayerControllerTest : MonoBehaviour
         gameObject.name = "Player" + avatar.Possessor.Index;
         trailManager.Initialize(avatar.IsMe);
         Activated = true;
-        OnPlayerJoined.Invoke(avatar.Possessor);
+        OnPlayerJoined.Invoke(transform);
     }
 
     void Update()
