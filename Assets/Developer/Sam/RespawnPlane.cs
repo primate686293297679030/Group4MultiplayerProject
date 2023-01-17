@@ -1,4 +1,5 @@
 using UnityEngine;
+using Alteruna;
 
 public class RespawnPlane : MonoBehaviour
 {
@@ -11,12 +12,15 @@ public class RespawnPlane : MonoBehaviour
             return;
         }
 
+        Multiplayer multiplayer = FindObjectOfType<Multiplayer>();
+        Transform spawn = multiplayer.AvatarSpawnLocations[multiplayer.Me.Index];
+
         bool hasCharacterController = other.TryGetComponent(out CharacterController cc);
         if(hasCharacterController) //for normal player
         {
             cc.enabled = false;
-            other.transform.position = new Vector3(0, 2, 0); //hard coded position n rotation for now, should respawn at players current check point
-            other.transform.rotation = Quaternion.identity;
+            other.transform.position = spawn.position;
+            other.transform.rotation = spawn.rotation;
             cc.Move(Vector3.zero);
             cc.enabled = true;
         }
@@ -26,8 +30,8 @@ public class RespawnPlane : MonoBehaviour
         {
             body.velocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
-            other.transform.position = new Vector3(0, 2, 0); //hard coded position for now, should respawn at players current check point
-            other.transform.rotation = Quaternion.identity;
+            other.transform.position = spawn.position;
+            other.transform.rotation = spawn.rotation;
         }
     }
 }
