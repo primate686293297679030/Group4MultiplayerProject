@@ -1,15 +1,20 @@
 using System;
-using Alteruna;
 using System.Collections;
+using EasingFunctions;
 using UnityEngine;
 using Avatar = Alteruna.Avatar;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = System.Numerics.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-public class PlayerControllerTest : MonoBehaviour
+/// <summary>
+/// Handles the movement/physics, materials and important variables of the player
+/// Might separate the movement part into a new script (movement component)
+/// </summary>
+public class PlayerController : MonoBehaviour
 {
-    public static Action<Avatar> OnPlayerJoined = delegate(Avatar user) {  };
+    public static Action<Avatar> OnPlayerJoined = delegate(Avatar user) { };
+    public static Action<Avatar> OnPlayerLeft = delegate (Avatar user) { };
 
     [HideInInspector] public bool Activated;
     [HideInInspector] public float slowMultiplier = 1f;
@@ -34,7 +39,7 @@ public class PlayerControllerTest : MonoBehaviour
     private bool isJumpDashing;
     private float dashProgress;
     private Vector3 velocity;
-    private Vector2 previousInputVector = new Vector2(1,0);
+    private Vector2 previousInputVector = new Vector2(1, 0);
 
     void Start()
     {
@@ -45,50 +50,29 @@ public class PlayerControllerTest : MonoBehaviour
         trailManager = GetComponentInChildren<PlayerTrail>();
         playerInput = GetComponent<PlayerInput>();
 
+
+        InitializePlayer();
         if (avatar.IsMe)
         {
-            if (owningMaterial)
-                meshRenderer.material = owningMaterial;
-            Camera myCamera = Camera.main;
-            myCamera.gameObject.GetComponent<SmoothCamera>().Target = transform;
-
             if (playerInput)
             {
                 playerInput.OnKeyDoubleTapped += OnDoubleTap;
                 playerInput.OnJumpAttempt += OnJumpAttempt;
+                playerInput.OnTempResetGame += InitializePlayer;
             }
-        }
-        else 
-        {
-            if (otherPlayerMaterial)
-                meshRenderer.material = otherPlayerMaterial;
-            if (playerInput)
-                Destroy(playerInput);
-            
-            Transform updateMatTrans = transform.Find("UpdateMaterials");
-            if (updateMatTrans != null)
-            {
-                foreach (var childRenderer in updateMatTrans.GetComponentsInChildren<MeshRenderer>())
-                {
-                    childRenderer.material = otherPlayerMaterial;
-                }
-            }
-
-            Destroy(GetComponent<PlayerAbilities>());
         }
         // player depends on spawn manager and game manager, this ensures that both are present in the scene
         if (!FindObjectOfType<SpawnManager>())
         {
             Instantiate(Resources.Load("SpawnManager") as GameObject);
         }
+
         if (!FindObjectOfType<GameManager>())
         {
             Instantiate(Resources.Load("GameManager") as GameObject);
         }
 
         gameObject.name = "Player" + avatar.Possessor.Index;
-        trailManager.Initialize(avatar.IsMe);
-        Activated = true;
         OnPlayerJoined.Invoke(avatar);
     }
 
@@ -99,14 +83,12 @@ public class PlayerControllerTest : MonoBehaviour
         {
             Vector2 inputVector = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-            if (inputVector != Vector2.Zero) 
+            if (inputVector != Vector2.Zero)
                 previousInputVector = inputVector;
 
-            
-            var targetRotation = Quaternion.LookRotation(new Vector3(previousInputVector.X, 0, previousInputVector.Y), Vector3.up);
 
-            //if (inputVector != Vector2.Zero && !isJumpDashing)
-            //    transform.rotation = targetRotation;
+            var targetRotation = Quaternion.LookRotation(new Vector3(previousInputVector.X, 0, previousInputVector.Y),
+                Vector3.up);
 
             if (!isJumpDashing)
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 33 * Time.deltaTime);
@@ -118,12 +100,14 @@ public class PlayerControllerTest : MonoBehaviour
                 velocity.z -= velocity.z * 15f * Time.deltaTime;
             }
             else if (!isDashing && !isJumpDashing)
-                velocity = new Vector3(Input.GetAxis("Horizontal") * walkSpeed, velocity.y, Input.GetAxis("Vertical") * walkSpeed);
+                velocity = new Vector3(Input.GetAxis("Horizontal") * walkSpeed, velocity.y,
+                    Input.GetAxis("Vertical") * walkSpeed);
 
             if (!characterController.isGrounded)
             {
                 if (velocity.y < 0 && isDashing)
-                    velocity.y -= gravityForce * EaseIn(dashProgress,3) * Time.deltaTime; // less gravity force during dash
+                    velocity.y -=
+                        gravityForce * Ease.In(dashProgress, 3) * Time.deltaTime; // less gravity force during dash
                 else
                     velocity.y -= gravityForce * Time.deltaTime;
             }
@@ -133,7 +117,8 @@ public class PlayerControllerTest : MonoBehaviour
             // shift based dashing, will probably be removed
             if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && inputVector != Vector2.Zero)
             {
-                StartCoroutine(DashRoutine(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized));
+                StartCoroutine(DashRoutine(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"))
+                    .normalized));
             }
         }
         else if (isDashing && !trailManager.IsActive)
@@ -153,6 +138,7 @@ public class PlayerControllerTest : MonoBehaviour
             velocity.y = jumpForce;
         }
     }
+
     void OnDoubleTap(KeyCode key)
     {
         if (isDashing || slowMultiplier < 1f || !Activated) return;
@@ -181,15 +167,15 @@ public class PlayerControllerTest : MonoBehaviour
             }
         }
     }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("WinningBox"))
         {
-            meshRenderer.material = winningMaterial;
+            UpdateMaterials(winningMaterial);
             GameManager.OnWin(gameObject);
         }
     }
-
 
     private IEnumerator DashRoutine(Vector3 direction)
     {
@@ -210,6 +196,7 @@ public class PlayerControllerTest : MonoBehaviour
         isDashing = false;
         dashProgress = 0f;
     }
+
     private IEnumerator JumpDashRoutine(Vector3 direction)
     {
         float elapsedTime = 0f;
@@ -224,20 +211,20 @@ public class PlayerControllerTest : MonoBehaviour
             dashProgress = elapsedTime / jumpDashDuration;
             velocity = direction * jumpDashSpeed;
             velocity.y = walkSpeed * jumpDashCurve.Evaluate(dashProgress);
-           
+
 
             float rotationProgress = dashProgress < 0.5f ? dashProgress * 2 : 2 - dashProgress * 2;
             Vector3 forwardDirection = Vector3.Lerp(
-                    new Vector3(velocity.x, 0, velocity.z).normalized, 
-                    Vector3.down, EaseOut(rotationProgress,2));
+                new Vector3(velocity.x, 0, velocity.z).normalized,
+                Vector3.down, Ease.Out(rotationProgress, 2));
 
             Quaternion newRotation = Quaternion.LookRotation(
-                forwardDirection, 
-                new Vector3(velocity.x, 
+                forwardDirection,
+                new Vector3(velocity.x,
                     Mathf.Abs(velocity.y), velocity.z).normalized);
             transform.rotation = newRotation;
 
-            spinRotation += spinSpeed * (rotationProgress + 1)* Time.deltaTime;
+            spinRotation += spinSpeed * (rotationProgress + 1) * Time.deltaTime;
             transform.RotateAround(transform.position, transform.up, spinRotation);
 
             if (dashProgress > 0.5f && characterController.isGrounded) elapsedTime = jumpDashDuration;
@@ -248,22 +235,65 @@ public class PlayerControllerTest : MonoBehaviour
         dashProgress = 0f;
     }
 
-    // todo: make "EasingFunctions.cs"
-    private float EaseOut(float x, int power)
+    private void UpdateMaterials(Material material, bool updateTrail = true)
     {
-        return 1 - Mathf.Pow(1 - x, power);
+        meshRenderer.material = material;
+        Transform updateMatTrans = transform.Find("UpdateMaterials");
+        if (updateMatTrans != null)
+        {
+            foreach (var childRenderer in updateMatTrans.GetComponentsInChildren<MeshRenderer>())
+            {
+                childRenderer.material = material;
+            }
+        }
+        if (updateTrail) 
+            trailManager.UpdateTrailColor(material.color);
     }
-    private float EaseIn(float x, int power)
-    {
-        return Mathf.Pow(x, power);
-    }
-    private float easeInOutBack(float x) 
-    {
-        const float c1 = 1.70158f;
-        const float c2 = c1 * 1.525f;
 
-        return x< 0.5
-            ? (Mathf.Pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2
-            : (Mathf.Pow(2 * x - 2, 2) * ((c2 + 1) * (x* 2 - 2) + c2) + 2) / 2;
+    public void InitializePlayer()
+    {
+        if (avatar.IsMe)
+        {
+            if (owningMaterial)
+                UpdateMaterials(owningMaterial, false);
+            Camera myCamera = Camera.main;
+            myCamera.gameObject.GetComponent<SmoothCamera>().Target = transform;
+        }
+        else
+        {
+            if (otherPlayerMaterial)
+                UpdateMaterials(otherPlayerMaterial, false);
+            if (playerInput)
+                Destroy(playerInput);
+
+            if (GetComponent<PlayerAbilities>())
+                Destroy(GetComponent<PlayerAbilities>());
+        }
+        trailManager.Initialize(avatar.IsMe);
+        Activated = true;
+    }
+
+    // This can be used to force a new location, as simply changing position once will not work on all clients
+    public void LockPlayerPosition(Vector3 position, float duration)
+    {
+        StartCoroutine(LockPlayerRoutine(position, duration));
+    }
+
+    private IEnumerator LockPlayerRoutine(Vector3 position, float duration)
+    {
+        Activated = false;
+        float elapsedTime = 0;
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            transform.position = position;
+            yield return new WaitForEndOfFrame();
+        }
+        Activated = true;
+    }
+
+    void OnDestroy()
+    {
+        OnPlayerLeft.Invoke(avatar);
     }
 }

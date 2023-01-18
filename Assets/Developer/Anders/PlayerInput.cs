@@ -1,16 +1,18 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// Handles the input of a player
+/// The script should only exist on the users own avatar (avatar.IsMe)
+/// </summary>
 public class PlayerInput : MonoBehaviour
 {
     private float tapInterval = 0.2f;
     public Action<KeyCode> OnKeyDoubleTapped = null;
     public Action OnJumpAttempt = null;
     public Action OnAbilityAttempt = null;
+    public Action OnTempResetGame = null;
 
     private Dictionary<KeyCode, float> keyTimestamps = new()
     {

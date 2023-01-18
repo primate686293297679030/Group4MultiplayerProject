@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8802445700966376720}
   - component: {fileID: 6749103097921111335}
   - component: {fileID: -2642081328173167237}
-  - component: {fileID: -1565367402147847278}
+  - component: {fileID: -7121633019867141381}
   m_Layer: 0
   m_Name: WebProjectile
   m_TagString: Web
@@ -54,7 +54,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3492115941078945973}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1371694dda170c0428450ef321ae3b54, type: 2}
+  - {fileID: 2100000, guid: aec4043a45288d14faa91d7c6082c69d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   a: 9755e45c-b927-4ac9-a501-bb82a70c4b64
---- !u!114 &-1565367402147847278
+--- !u!114 &-7121633019867141381
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3492115941078945973}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1576325847, guid: 0ae8d181602a00248a82f64a684a1c88, type: 3}
+  m_Script: {fileID: 11500000, guid: efe172d750be7c748ab7c848737192ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Multiplayer: {fileID: 0}
@@ -198,3 +198,4 @@ MonoBehaviour:
   SyncEveryNUpdates: 1
   FullSyncEveryNSync: 1
   sendData: 1
+  OwnerID: -1

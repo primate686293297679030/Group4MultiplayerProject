@@ -78,7 +78,8 @@ public class PlayerTrail : MonoBehaviour
         }
     }
 
-
-
-    
+    public void UpdateTrailColor(Color newColor)
+    {
+        color = newColor;
+    }
 }
