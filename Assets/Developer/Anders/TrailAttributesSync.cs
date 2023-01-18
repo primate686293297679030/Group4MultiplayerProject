@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TrailAttributesSync : Synchronizable
 {
-    // Data to be synchronized with other players in our playroom.
+    // Data to be synchronized with other Players in our playroom.
     public float lifeTime;
     public int fadeOutTime;
 
@@ -17,7 +17,7 @@ public class TrailAttributesSync : Synchronizable
     void Update()
     {
         bool shouldCommit = false;
-        // If the value of our float has changed, sync it with the other players in our playroom.
+        // If the value of our float has changed, sync it with the other Players in our playroom.
         if (lifeTime != oldLifeTime)
         {
             oldLifeTime = lifeTime;
@@ -49,7 +49,7 @@ public class TrailAttributesSync : Synchronizable
 
     public override void AssembleData(Writer writer, byte LOD)
     {
-        // Write our data so that it can be sent to the other players in our playroom.
+        // Write our data so that it can be sent to the other Players in our playroom.
         writer.Write(lifeTime);
         writer.Write(fadeOutTime);
     }

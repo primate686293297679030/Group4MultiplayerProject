@@ -13,10 +13,12 @@ public class SpawnManager : MonoBehaviour
     public static Transform WebProjectileParent;
 
     private Spawner spawner;
+
     private Multiplayer multiplayer;
 
     void Start()
     {
+
         if (Instance == null)
             Instance = this;
         else 
@@ -24,6 +26,7 @@ public class SpawnManager : MonoBehaviour
 
         spawner = GetComponent<Spawner>();
         multiplayer = FindObjectOfType<Multiplayer>();
+        
         if (multiplayer)
         {
             multiplayer.RegisterRemoteProcedure("ActivateProjectile", ActivateProjectile);

@@ -1,27 +1,27 @@
 using Alteruna;
-using Alteruna.Trinity;
 using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 using Avatar = Alteruna.Avatar;
 using Vector3 = UnityEngine.Vector3;
 
+/// <summary>
+/// Handles the abilities of a player (only one for now)
+/// The script should only exist on the users own avatar (avatar.IsMe)
+/// </summary>
 public class PlayerAbilities : MonoBehaviour
 {
     [SerializeField] private GameObject projectilePrefab;
     private PlayerInput playerInput;
-    private float cooldownLength = 0.66f;
+    private float cooldownLength = 1;
     private float cooldownRemaining;
+    private PlayerController player;
 
     // Start is called before the first frame update
     void Start()
     {
         playerInput = GetComponent<PlayerInput>();
         playerInput.OnAbilityAttempt += TryUseAbility;
-
+        player = GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -35,6 +35,8 @@ public class PlayerAbilities : MonoBehaviour
 
     void TryUseAbility()
     {
+        if (player.slowMultiplier < 1) return;
+
         if (cooldownRemaining <= 0)
         {
             Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
@@ -59,19 +61,17 @@ public class PlayerAbilities : MonoBehaviour
 
     GameObject FindClosestPlayer(Vector3 position)
     {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         float closestDistance = float.MaxValue;
         GameObject closestPlayer = null;
-        position.z = 0; // ignores z in both vectors
-        foreach (var player in players)
+        foreach (var player in GameManager.Players)
         {
-            if (player == gameObject) continue;
+            if (player.gameObject == gameObject) continue;
             float distance = Vector3.Distance(
-                new Vector3(player.transform.position.x, player.transform.position.y,0), position);
+                player.transform.position, position);
             if (distance < closestDistance)
             {
                 closestDistance = distance;
-                closestPlayer = player;
+                closestPlayer = player.gameObject;
             }
         }
         return closestPlayer;
