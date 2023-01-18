@@ -51,7 +51,7 @@ public class PlayerRespawn : MonoBehaviour
         cc.Move(Vector3.zero);
     }
 
-    private void CallRespawn()
+    public void CallRespawn()
     {
         ProcedureParameters parameters = new ProcedureParameters();
         Vector3 position = CheckpointBehavior.checkpoints[checkpoint];
