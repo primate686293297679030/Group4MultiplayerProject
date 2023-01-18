@@ -9,7 +9,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1124409774460673559, guid: fe662132943e9994cb241d6819e50218, type: 3}
       propertyPath: m_Name
-      value: Player
+      value: SamsTestPlayer
       objectReference: {fileID: 0}
     - target: {fileID: 3717337548994492202, guid: fe662132943e9994cb241d6819e50218, type: 3}
       propertyPath: m_RootOrder
@@ -55,7 +55,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6752294945066594793, guid: fe662132943e9994cb241d6819e50218, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: fe662132943e9994cb241d6819e50218, type: 3}
 --- !u!1 &118217293401327233 stripped
 GameObject:
@@ -74,5 +75,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8275c261dbf3ccf49abdd1936797c5ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkpoint: {fileID: 0}
+  checkpoint: 0
   respawnAt: -10
+  fadeDuration: 1

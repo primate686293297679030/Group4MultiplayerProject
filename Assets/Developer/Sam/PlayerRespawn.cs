@@ -1,16 +1,20 @@
 using UnityEngine;
 using Alteruna;
 using Alteruna.Trinity;
+using System.Collections;
 
 public class PlayerRespawn : MonoBehaviour
 {
     [HideInInspector] public int checkpoint;
 
     [SerializeField] float respawnAt = -10f;
+    [SerializeField] float fadeDuration = .5f;
 
     private bool isMe;
     private CharacterController cc;
     private Multiplayer multiplayer;
+    private SmoothCamera camBehaviour;
+    private bool fading;
 
     private void Start()
     {
@@ -18,6 +22,7 @@ public class PlayerRespawn : MonoBehaviour
         multiplayer.RegisterRemoteProcedure("RespawnRPC", RespawnRPC);
         isMe = GetComponent<Alteruna.Avatar>().IsMe;
         cc = GetComponent<CharacterController>();
+        camBehaviour = Camera.main.GetComponent<SmoothCamera>();
 
         if (!isMe) return;
         Vector3 spawn = multiplayer.AvatarSpawnLocations[multiplayer.Me.Index].position;
@@ -28,9 +33,9 @@ public class PlayerRespawn : MonoBehaviour
     {
         if (!isMe) return;
 
-        if (transform.position.y < respawnAt)
+        if (transform.position.y < respawnAt && !fading)
         {
-            CallRespawn();
+            CallRespawnWithFade(fadeDuration);
         }
     }
 
@@ -60,5 +65,21 @@ public class PlayerRespawn : MonoBehaviour
         parameters.Set("Z", position.z);
         multiplayer.InvokeRemoteProcedure("RespawnRPC", UserId.All, parameters);
         Respawn(position);
+    }
+
+    private IEnumerator CallRespawnWithFadeCo(float delay)
+    {
+        camBehaviour.FadeOut(delay);
+        yield return new WaitForSeconds(delay);
+        CallRespawn();
+        camBehaviour.FadeIn(delay);
+        fading = false;
+    }
+
+    public void CallRespawnWithFade(float delay)
+    {
+        if (fading) return;
+        fading = true;
+        StartCoroutine(CallRespawnWithFadeCo(delay / 2f)); //both fade in and out so total fade time will be twice as big
     }
 }
