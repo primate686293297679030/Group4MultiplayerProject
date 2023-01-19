@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System;
 using Alteruna;
-
+using UnityEngine.UIElements;
 
 
    public enum State
@@ -30,6 +30,11 @@ public class GameStateManager : MonoBehaviour
     Transform ActiveTranfrom;
     public int StateIndex;
     public Action<State> OnStateUpdated;
+    public Action PreRace;
+    public Action OnStartRace;
+    public Action PostRace;
+    [SerializeField]GameObject canvas;
+    
     int[] next = new int[3] { 0, 1, 2 };
     enum Actions
     {
@@ -55,9 +60,11 @@ public class GameStateManager : MonoBehaviour
     }
     void Start()
     {
+        PreRace+=OnPreRace;
+        OnStartRace += OnDuringRace;
         GameObject trans2 = GameObject.FindGameObjectWithTag("SpawnLocation");
         GameObject trans1 = GameObject.FindGameObjectWithTag("LobbySpawnPoint");
-
+      //  [SerializeField] Canvas LobbyMenu;
         Transform aewrgeqr = gameObject.transform;
         stateTransforms.Add(aewrgeqr);
         stateTransforms.Add(trans2.transform);
@@ -68,39 +75,70 @@ public class GameStateManager : MonoBehaviour
         // RoomMenuBase.multiplayer.Connected.AddListener(playerJoined);
     }
     
-
-    IEnumerator PreGameState()
+   void OnPreRace()
     {
+       canvas.SetActive(true);
+    }
+    IEnumerator PreRaceState()
+    {
+        PreRace();
         Debug.Log("PreGame: Enter");
         while (GameState == State.PreRace)
         {
-            yield return 0;
+            yield return new WaitForEndOfFrame();
         }
         Debug.Log("Crawl: Exit");
         NextState();
     }
 
-    IEnumerator DuringGameState()
+    IEnumerator DuringRaceState()
     {
+        OnStartRace();
         Debug.Log("DuringGame: Enter");
         while (GameState == State.DuringRace)
         {
-            yield return 0;
+            yield return new WaitForEndOfFrame();
         }
         Debug.Log("DuringGame: Exit");
         NextState();
     }
 
-    IEnumerator PostGameState()
+    IEnumerator PostRaceState()
     {
-        Debug.Log("PostGame: Enter");
+
+        Debug.Log("PostRace: Enter");
         while (GameState == State.PostRace)
         {
-            yield return 0;
+
+
+            yield return new WaitForEndOfFrame();
         }
         Debug.Log("PostGame: Exit");
         NextState();
     }
+   
+    void OnDuringRace()
+    {
+        foreach(var player in GameManager.Players)
+        {
+
+            PlayerRespawn playerRespawn = player.GetComponent<PlayerRespawn>();
+
+
+            playerRespawn.checkpoint = 0;
+            playerRespawn.CallRespawn();
+
+
+        }
+
+    }
+   public void OnStartButton(GameObject ui)
+    {
+        ui.SetActive(false);
+        GameState = State.DuringRace;
+    }
+
+
 
   // IEnumerator IdleState()
   // {
@@ -116,14 +154,7 @@ public class GameStateManager : MonoBehaviour
 
   public  void NextState()
     {
-        if(StateIndex<2)
-        {
-        StateIndex++;
-        }
-        else if(StateIndex==2)
-        {
-            StateIndex = 0;
-        }
+      
 
         string methodName = GameState.ToString() + "State";
         System.Reflection.MethodInfo info =

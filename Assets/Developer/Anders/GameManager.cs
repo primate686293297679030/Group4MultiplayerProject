@@ -58,7 +58,7 @@ public class GameManager : AttributesSync
         GameObject _winningUIObject = Instantiate(Instance.winningUI);
         _winningUIObject.transform.SetParent(winner.transform);
         _winningUIObject.transform.localPosition = new Vector3(0, 1f, 0);
-
+        GameStateManager.instance.GameState = State.PostRace;
         Instance.Invoke("ResetGame", 3);
         Instance.Invoke("FadeOut", 1.98f);
         Instance.Invoke("FadeIn", 3);
@@ -95,6 +95,7 @@ public class GameManager : AttributesSync
             //    player.GetComponent<PlayerController>().LockPlayerPosition(multiplayer.AvatarSpawnLocation.position, 0.05f);
         }
         OnGameReset.Invoke();
+        GameStateManager.instance.GameState = State.PreRace;
     }
     [SynchronizableMethod]
     public void FadeOutAllCameras()
