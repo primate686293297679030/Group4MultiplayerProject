@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
             {
                 playerInput.OnKeyDoubleTapped += OnDoubleTap;
                 playerInput.OnJumpAttempt += OnJumpAttempt;
-                playerInput.OnTempResetGame += InitializePlayer;
+               // playerInput.OnShiftPress += OnShiftPress;
             }
         }
         // player depends on spawn manager and game manager, this ensures that both are present in the scene
@@ -107,7 +107,7 @@ public class PlayerController : MonoBehaviour
             {
                 if (velocity.y < 0 && isDashing)
                     velocity.y -=
-                        gravityForce * Ease.In(dashProgress, 3) * Time.deltaTime; // less gravity force during dash
+                        gravityForce * Ease.In(dashProgress, 3) * Time.deltaTime * 0.66f; // less gravity force during dash
                 else
                     velocity.y -= gravityForce * Time.deltaTime;
             }
@@ -115,10 +115,19 @@ public class PlayerController : MonoBehaviour
             characterController.Move((velocity * slowMultiplier) * Time.deltaTime);
 
             // shift based dashing, will probably be removed
-            if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing && inputVector != Vector2.Zero)
+            if (Input.GetKeyDown(KeyCode.LeftShift))
             {
+                if (!isDashing && inputVector != Vector2.Zero && !isJumpDashing)
                 StartCoroutine(DashRoutine(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"))
                     .normalized));
+                else
+                {
+                    StopAllCoroutines();
+                    isDashing = false;
+                    isJumpDashing = false;
+                    velocity.x *= 0.25f;
+                    velocity.z *= 0.25f;
+                }
             }
         }
         else if (isDashing && !trailManager.IsActive)
@@ -168,6 +177,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //void OnShiftPress()
+    //{
+    //    if (isDashing || isJumpDashing)
+    //    {
+    //        StopAllCoroutines();
+    //        isDashing = false;
+    //        isJumpDashing = false;
+    //    }
+    //}
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("WinningBox"))

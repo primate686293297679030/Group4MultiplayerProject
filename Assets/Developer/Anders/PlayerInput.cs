@@ -12,7 +12,6 @@ public class PlayerInput : MonoBehaviour
     public Action<KeyCode> OnKeyDoubleTapped = null;
     public Action OnJumpAttempt = null;
     public Action OnAbilityAttempt = null;
-    public Action OnTempResetGame = null;
 
     private Dictionary<KeyCode, float> keyTimestamps = new()
     {

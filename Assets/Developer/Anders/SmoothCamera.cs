@@ -17,7 +17,7 @@ public class SmoothCamera : MonoBehaviour
     private float transitionMultiplier = 1f;
     private float timeSpentFollowingOtherPlayer;
     private Image blackImage;
-    private bool isFadingIn;
+    private bool isFading;
 
     void Start()
     {
@@ -52,19 +52,20 @@ public class SmoothCamera : MonoBehaviour
     // fades the screen to black
     public void FadeOut(float duration)
     {
-        if (isFadingIn) return;
+        if (isFading) return;
         StartCoroutine(FadeRoutine(duration, true));
     }
     // fades the screen from black to clear
     public void FadeIn(float duration)
     {
-        isFadingIn = true;
+        if (isFading) return;
         StartCoroutine(FadeRoutine(duration, false));
     }
     private IEnumerator FadeRoutine(float duration, bool isFadingOut)
     {
-        if (blackImage != null)
+        if (blackImage != null && !isFading)
         {
+            isFading = true;
             blackImage.enabled = true;
             Color startColor = isFadingOut ?  new Color(0, 0, 0, 0) :new Color(0, 0, 0, 1);
             Color endColor = isFadingOut ? new Color(0, 0, 0, 1) : new Color(0, 0, 0, 0);
@@ -80,7 +81,6 @@ public class SmoothCamera : MonoBehaviour
             blackImage.color = endColor;
         }
 
-        if (!isFadingOut) 
-            isFadingIn = false;
+        isFading = false;
     }
 }

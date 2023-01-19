@@ -168,6 +168,7 @@ GameObject:
   - component: {fileID: 8980061323725817242}
   - component: {fileID: -1955186253185759913}
   - component: {fileID: 5266425564844344270}
+  - component: {fileID: 1121314510855314952}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -208,12 +209,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Activated: 1
   slowMultiplier: 1
-  jumpForce: 15
+  jumpForce: 16
   gravityForce: 45
-  dashDuration: 0.36
+  dashDuration: 0.33
   jumpDashDuration: 1.5
   jumpDashSpeed: 20
-  walkSpeed: 6
+  walkSpeed: 6.5
   owningMaterial: {fileID: 2100000, guid: 8258d89494b88e645a446ea8eb13454e, type: 2}
   otherPlayerMaterial: {fileID: 2100000, guid: adcf6633f0eedae4f8bc9b45bc7a27a1, type: 2}
   winningMaterial: {fileID: 2100000, guid: 8150b3706f62fef4f9ceedefed3162d3, type: 2}
@@ -504,6 +505,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 3492115941078945973, guid: dcb22a803d16ef044b27c44f126dd106, type: 3}
+--- !u!114 &1121314510855314952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124409774460673559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8275c261dbf3ccf49abdd1936797c5ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkpoint: 0
+  respawnAt: -15
 --- !u!1 &1972459778987601969
 GameObject:
   m_ObjectHideFlags: 0

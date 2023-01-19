@@ -85,6 +85,10 @@ public class GameManager : AttributesSync
         foreach (var player in Players)
         {
             player.GetComponent<PlayerController>().InitializePlayer();
+            PlayerRespawn respawner = player.GetComponent<PlayerRespawn>();
+            respawner.checkpoint = 0;
+            if (player.IsMe)
+                player.GetComponent<PlayerRespawn>().CallRespawn();
 
             // old respawn
             //if(resetToSpawnLocation && player.GetComponent<Avatar>().IsMe)

@@ -51,6 +51,7 @@ public class WebProjectile : MonoBehaviour
     {
         IsActive = false;
         if (isOwnedByThisUser) rb.velocity *= 0.2f;
+
         Destroy(GetComponent<SphereCollider>());
         syncAttributes.SendData = false;
         syncAttributes.enabled = false;
@@ -87,7 +88,7 @@ public class WebProjectile : MonoBehaviour
         if (isOwnedByThisUser)
         {
             // duration the despawn to make sure that all instances are inactivated first
-            StartCoroutine(DelayedDespawnRoutine(1));
+            StartCoroutine(DelayedDespawnRoutine(10));
         }
         else
         {
