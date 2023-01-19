@@ -19,7 +19,7 @@ using UnityEngine.UIElements;
     
 
     
-public class GameStateManager : MonoBehaviour
+public class GameStateManager : AttributesSync
 {
    
     // Start is called before the first frame update
@@ -34,8 +34,10 @@ public class GameStateManager : MonoBehaviour
     public Action OnStartRace;
     public Action PostRace;
     [SerializeField]GameObject canvas;
-    
-    int[] next = new int[3] { 0, 1, 2 };
+    StateSynchronizable stateSynchronizable;  
+
+
+ 
     enum Actions
     {
 
@@ -60,6 +62,7 @@ public class GameStateManager : MonoBehaviour
     }
     void Start()
     {
+        stateSynchronizable = GetComponent<StateSynchronizable>();
         PreRace+=OnPreRace;
         OnStartRace += OnDuringRace;
         GameObject trans2 = GameObject.FindGameObjectWithTag("SpawnLocation");
@@ -68,7 +71,6 @@ public class GameStateManager : MonoBehaviour
         Transform aewrgeqr = gameObject.transform;
         stateTransforms.Add(aewrgeqr);
         stateTransforms.Add(trans2.transform);
-        OnStateUpdated += SynchStates;
        
         
 
@@ -132,27 +134,34 @@ public class GameStateManager : MonoBehaviour
         }
 
     }
-   public void OnStartButton(GameObject ui)
+ 
+    public void OnStartButton(GameObject ui)
     {
+        InvokeRemoteMethod("UpdateGameState", (ushort)UserId.AllInclusive, (int)State.DuringRace);
         ui.SetActive(false);
-        GameState = State.DuringRace;
+      
+    }
+    [SynchronizableMethod]
+    public void UpdateGameState(int state)
+    {
+        GameStateManager.instance.GameState = (State)state;
     }
 
 
 
-  // IEnumerator IdleState()
-  // {
-  //     Debug.Log("PostGame: Enter");
-  //     while (GameState == State.PostGame)
-  //     {
-  //         yield return 0;
-  //     }
-  //     Debug.Log("PostGame: Exit");
-  // }
+    // IEnumerator IdleState()
+    // {
+    //     Debug.Log("PostGame: Enter");
+    //     while (GameState == State.PostGame)
+    //     {
+    //         yield return 0;
+    //     }
+    //     Debug.Log("PostGame: Exit");
+    // }
 
 
 
-  public  void NextState()
+    public  void NextState()
     {
       
 
@@ -167,7 +176,7 @@ public class GameStateManager : MonoBehaviour
     void Update()
     {
     
-
+  
     
     }
     void PauseState()
@@ -179,7 +188,7 @@ public class GameStateManager : MonoBehaviour
     void SynchStates(State gameState)
     {
 
-    //    StateSynchronizable.StateSynch.SynchronizedInt = ((int)gameState);
+       
     }
 
    
@@ -191,51 +200,39 @@ public class GameStateManager : MonoBehaviour
 
 public class StateSynchronizable : Synchronizable
 {
-   public static StateSynchronizable StateSynch;
-    void Awake()
-    {
-
-        if (StateSynch == null)
-        {
-            StateSynch = this;
-        }
-        else
-        {
-            Destroy(this);
-        }
-
-    }
+ 
     // Data to be synchronized with other players in our playroom.
-    public int SynchronizedInt=0;
+    public int GameStateInt=0;
 
     // Used to store the previous version of our data so that we know when it has changed.
-    private int _oldSynchronizedInt=0;
+    private int _oldGameStateInt=0;
 
     public override void DisassembleData(Reader reader, byte LOD)
     {
         // Set our data to the updated value we have recieved from another player.
-        SynchronizedInt = reader.ReadInt();
+        GameStateInt = reader.ReadInt();
 
         // Save the new data as our old data, otherwise we will immediatly think it changed again.
-        _oldSynchronizedInt = SynchronizedInt;
+        _oldGameStateInt = GameStateInt;
     }
 
     public override void AssembleData(Writer writer, byte LOD)
     {
         // Write our data so that it can be sent to the other players in our playroom.
-        writer.Write(SynchronizedInt);
+        writer.Write(GameStateInt);
     }
 
     private void Update()
     {
         // If the value of our float has changed, sync it with the other players in our playroom.
-        if (SynchronizedInt != _oldSynchronizedInt)
+        if (GameStateInt != _oldGameStateInt)
         {
             // Store the updated value
-            _oldSynchronizedInt = SynchronizedInt;
+            _oldGameStateInt = GameStateInt;
 
             // Tell Alteruna Multiplayer that we want to commit our data.
             Commit();
+
         }
 
         // Update the Synchronizable
