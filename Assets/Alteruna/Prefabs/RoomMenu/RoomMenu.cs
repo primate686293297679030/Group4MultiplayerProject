@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Alteruna;
 using System.Collections;
+using UnityEngine.Events;
 
 public class RoomMenu : MonoBehaviour
 {
@@ -120,7 +121,9 @@ public class RoomMenu : MonoBehaviour
             _aump.RoomListUpdated.AddListener(UpdateList);
             _aump.RoomJoined.AddListener(JoinedRoom);
             _aump.RoomLeft.AddListener(LeftRoom);
+            
             StartButton.onClick.AddListener(() => { _aump.JoinOnDemandRoom(); });
+            StartButton.onClick.AddListener(() => {LobbyState.instance.CreatesRoom();});
             LeaveButton.onClick.AddListener(() => { _aump.CurrentRoom?.Leave(); });
         }
 

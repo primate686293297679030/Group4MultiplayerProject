@@ -6,6 +6,10 @@ TagManager:
   tags:
   - WinningBox
   - Web
+  - GameStateManager
+  - SpawnLocation
+  - SpawnManager
+  - LobbySpawnPoint
   layers:
   - Default
   - TransparentFX
