@@ -17,8 +17,6 @@ public class StartMenu : AttributesSync
 
     private Canvas canvas;
 
-    //private Multiplayer multiplayer;
-
     void Awake()
     {
         PlayerController.OnPlayerJoined += (avatar) =>
@@ -54,6 +52,8 @@ public class StartMenu : AttributesSync
         GameStateManager.instance.OnStartRace += InactivateMenu;
         GameStateManager.instance.GameState = State.PreRace;
         GameStateManager.instance.NextState(); // <--- TEMP: STATE MANAGER SHOULDN'T START HERE
+        if (!environmentToActivate)
+            environmentToActivate = GameObject.Find("Environment");
     }
     public void OnReadyButtonPressed()
     {

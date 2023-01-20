@@ -48,6 +48,27 @@ public class PlayerController : MonoBehaviour
     private Vector2 previousInputVector = new Vector2(1, 0);
     private Vector3 dashDirection = Vector3.right;
 
+    void Awake()
+    {
+        // player depends on spawn manager and game manager, this ensures that both are present in the scene
+        if (!FindObjectOfType<SpawnManager>())
+        {
+            Instantiate(Resources.Load("SpawnManager") as GameObject);
+        }
+
+        if (!FindObjectOfType<GameManager>())
+        {
+            Instantiate(Resources.Load("GameManager") as GameObject);
+        }
+        if (!FindObjectOfType<StartMenu>())
+        {
+            Instantiate(Resources.Load("StartMenu") as GameObject);
+        }
+        if (!FindObjectOfType<GameStateManager>())
+        {
+            Instantiate(Resources.Load("_gameStateManager") as GameObject);
+        }
+    }
     void Start()
     {
         // Get components
@@ -68,16 +89,7 @@ public class PlayerController : MonoBehaviour
                // playerInput.OnShiftPress += OnShiftPress;
             }
         }
-        // player depends on spawn manager and game manager, this ensures that both are present in the scene
-        if (!FindObjectOfType<SpawnManager>())
-        {
-            Instantiate(Resources.Load("SpawnManager") as GameObject);
-        }
 
-        if (!FindObjectOfType<GameManager>())
-        {
-            Instantiate(Resources.Load("GameManager") as GameObject);
-        }
         if (multiplayer)
         {
             multiplayer.RegisterRemoteProcedure("SetRemotePlayerReady", SetRemotePlayerReady);
