@@ -34,6 +34,7 @@ public class GameManager : AttributesSync
         QualitySettings.vSyncCount = 0;
         PlayerController.OnPlayerJoined += (avatar) =>
         {
+            // this felt more safe, to ensure that all players are included in each client... but probably not necessary
             Players = FindObjectsOfType<Avatar>().ToList();
             // Players.Add(avatar);
             Debug.Log(avatar.name + " has joined!");

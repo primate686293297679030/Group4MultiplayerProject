@@ -115,7 +115,7 @@ public class WebProjectile : MonoBehaviour
     {
         if (!IsActive) return;
 
-        if (other.GetComponent<WebProjectile>())
+        if (other.GetComponent<WebProjectile>() && stuckPlayer == null)
         {
             if (isOwnedByThisUser)
             {
