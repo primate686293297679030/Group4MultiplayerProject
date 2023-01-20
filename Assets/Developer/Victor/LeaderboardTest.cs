@@ -50,6 +50,7 @@ public class LeaderboardTest : Synchronizable
     {
         goal = GameObject.Find("WinningBox");
         PlayerController.OnPlayerJoined += GetPlayerTransforms;
+        PlayerController.OnPlayerLeft += RemovePlayerUI;
         multiplayer = FindObjectOfType<Multiplayer>();
         if (multiplayer.Me == multiplayer.GetUser(0))
         {
@@ -105,7 +106,7 @@ public class LeaderboardTest : Synchronizable
     // todo: fix avatar null check
     
     // this gets called on player join
-    public void GetPlayerTransforms(Avatar avatar)
+    private void GetPlayerTransforms(Avatar avatar)
     {
         foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
         {
@@ -132,5 +133,12 @@ public class LeaderboardTest : Synchronizable
             Debug.Log(instantiationIndex);
             instantiationIndex++;
         }
+    }
+
+    private void RemovePlayerUI(Avatar avatar)
+    {
+        Destroy(avatarsAndEntries[avatar].gameObject);
+        avatarsAndEntries.Remove(avatar);
+        playerTransforms.Remove(avatar.transform);
     }
 }
