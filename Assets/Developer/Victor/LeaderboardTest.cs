@@ -21,8 +21,6 @@ public class LeaderboardTest : Synchronizable
     
     [SerializeField] private Vector3[] UIPositions = new Vector3[5];
     [SerializeField] private LeaderboardEntry entryPrefab;
-    [SerializeField] private Camera cam;
-
 
     public override void DisassembleData(Reader reader, byte LOD)
     {

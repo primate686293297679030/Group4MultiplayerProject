@@ -32,7 +32,7 @@ public class LeaderboardSynchronizable : Synchronizable
     private void Start()
     {
         goal = GameObject.Find("WinningBox");
-        PlayerControllerTest.OnPlayerJoined += GetPlayerTransforms;
+        PlayerController.OnPlayerJoined += GetPlayerTransforms;
     }
 
     private void Update()
