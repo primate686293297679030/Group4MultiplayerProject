@@ -94,7 +94,7 @@ public class PlayerController : MonoBehaviour
         {
             multiplayer.RegisterRemoteProcedure("SetRemotePlayerReady", SetRemotePlayerReady);
         }
-        //gameObject.name = "Player" + avatar.Possessor.Index;
+        gameObject.name = "Player" + avatar.Possessor.Index;
         OnPlayerJoined.Invoke(avatar);
 
     }

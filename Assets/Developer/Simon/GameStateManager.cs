@@ -143,6 +143,10 @@ public class GameStateManager : AttributesSync
     {
         GameStateManager.instance.GameState = (State)state;
     }
+    public void UpdateGameStateLocal(int state)
+    {
+        GameStateManager.instance.GameState = (State)state;
+    }
     public  void NextState()
     {
       string methodName = GameState.ToString() + "State";

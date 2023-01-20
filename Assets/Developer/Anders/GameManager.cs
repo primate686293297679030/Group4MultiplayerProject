@@ -143,7 +143,7 @@ public class GameManager : AttributesSync
                 player.GetComponent<PlayerRespawn>().CallRespawn();
         }
         OnGameReset.Invoke();
-        GameStateManager.instance.UpdateGameState((int)State.PreRace);
+        GameStateManager.instance.UpdateGameStateLocal((int)State.PreRace);
         //InvokeRemoteMethod("UpdateGameState", (ushort)UserId.AllInclusive, (int)State.PreRace);
     }
     [SynchronizableMethod]
@@ -158,9 +158,10 @@ public class GameManager : AttributesSync
                 player.GetComponent<PlayerRespawn>().CallRespawn();
         }
         OnGameReset.Invoke();
-        GameStateManager.instance.UpdateGameState((int)State.DuringRace);
+        GameStateManager.instance.UpdateGameStateLocal((int)State.DuringRace);
         //InvokeRemoteMethod("UpdateGameState", (ushort)UserId.AllInclusive, (int)State.DuringRace);
     }
+
     //[SynchronizableMethod]
     //public void UpdateGameState(int state)
     //{
