@@ -21,63 +21,63 @@ using UnityEngine.UIElements;
     
 public class GameStateManager : AttributesSync
 {
-   
-    // Start is called before the first frame update
     public static GameStateManager instance;
     public State GameState;
-    List<Transform> stateTransforms=new List<Transform>();
+    Alteruna.Multiplayer multiplayer;
+   
+    [SerializeField] GameObject canvas;
+    
+    public UnityAction playerCreatesRoom;
 
-    Transform ActiveTranfrom;
-    public int StateIndex;
     public Action<State> OnStateUpdated;
     public Action PreRace;
     public Action OnStartRace;
     public Action PostRace;
-    [SerializeField]GameObject canvas;
-    StateSynchronizable stateSynchronizable;  
 
-
- 
-    enum Actions
-    {
-
-        next,
-        wait,
-        idle,
-
-
-    }
     void Awake()
     {
  
-  if (instance == null)
-  {
-      instance = this;
-  }
-  else
-  {
-      Destroy(this);
-  }
+        if (instance == null)
+        {
+             instance = this;
+        }
+        else
+        {
+             Destroy(this);
+        }
  
     }
     void Start()
     {
-        stateSynchronizable = GetComponent<StateSynchronizable>();
-        PreRace+=OnPreRace;
-        OnStartRace += OnDuringRace;
-        GameObject trans2 = GameObject.FindGameObjectWithTag("SpawnLocation");
-        GameObject trans1 = GameObject.FindGameObjectWithTag("LobbySpawnPoint");
-      //  [SerializeField] Canvas LobbyMenu;
-        Transform aewrgeqr = gameObject.transform;
-        stateTransforms.Add(aewrgeqr);
-        stateTransforms.Add(trans2.transform);
-       
-        
+        multiplayer = FindObjectOfType<Multiplayer>();
 
-        // RoomMenuBase.multiplayer.Connected.AddListener(playerJoined);
+        multiplayer.RoomJoined.AddListener(RoomJoined);
+        multiplayer.OtherUserJoined.AddListener(OtherPlayerJoined);
+        PreRace +=OnPreRace;
+        OnStartRace += OnDuringRace;
+        //LobbyState.multiplayer.Connected.AddListener(playerJoined);
+        playerCreatesRoom += CreatesRoom;
     }
-    
-   void OnPreRace()
+
+    //player presses Start on RoomMenu
+    public void CreatesRoom()
+    {
+        GameStateManager.instance.GameState = State.PreRace;
+        GameTimer.instance.Enable();
+        GameStateManager.instance.NextState();
+    }
+    void RoomJoined(Multiplayer multiplayer, Room room, User user)
+    {
+        
+        Quaternion target = Quaternion.Euler(14, 0, 0);
+   
+
+    }
+    void OtherPlayerJoined(Multiplayer multiplayer, User user)
+    {
+
+    }
+    void OnPreRace()
     {
        canvas.SetActive(true);
     }
@@ -111,8 +111,6 @@ public class GameStateManager : AttributesSync
         Debug.Log("PostRace: Enter");
         while (GameState == State.PostRace)
         {
-
-
             yield return new WaitForEndOfFrame();
         }
         Debug.Log("PostGame: Exit");
@@ -123,13 +121,9 @@ public class GameStateManager : AttributesSync
     {
         foreach(var player in GameManager.Players)
         {
-
             PlayerRespawn playerRespawn = player.GetComponent<PlayerRespawn>();
-
-
             playerRespawn.checkpoint = 0;
             playerRespawn.CallRespawn();
-
 
         }
 
@@ -141,101 +135,28 @@ public class GameStateManager : AttributesSync
         ui.SetActive(false);
       
     }
+
     [SynchronizableMethod]
     public void UpdateGameState(int state)
     {
         GameStateManager.instance.GameState = (State)state;
     }
-
-
-
-    // IEnumerator IdleState()
-    // {
-    //     Debug.Log("PostGame: Enter");
-    //     while (GameState == State.PostGame)
-    //     {
-    //         yield return 0;
-    //     }
-    //     Debug.Log("PostGame: Exit");
-    // }
-
-
-
     public  void NextState()
     {
-      
-
-        string methodName = GameState.ToString() + "State";
+      string methodName = GameState.ToString() + "State";
         System.Reflection.MethodInfo info =
             GetType().GetMethod(methodName,
                                 System.Reflection.BindingFlags.NonPublic |
                                 System.Reflection.BindingFlags.Instance);
         StartCoroutine((IEnumerator)info.Invoke(this, null));
     }
-    // Update is called once per frame
+
     void Update()
     {
     
   
     
     }
-    void PauseState()
-    {
-
-    }
-
-
-    void SynchStates(State gameState)
-    {
-
-       
-    }
-
-   
-    
-
 
 }
 
-
-public class StateSynchronizable : Synchronizable
-{
- 
-    // Data to be synchronized with other players in our playroom.
-    public int GameStateInt=0;
-
-    // Used to store the previous version of our data so that we know when it has changed.
-    private int _oldGameStateInt=0;
-
-    public override void DisassembleData(Reader reader, byte LOD)
-    {
-        // Set our data to the updated value we have recieved from another player.
-        GameStateInt = reader.ReadInt();
-
-        // Save the new data as our old data, otherwise we will immediatly think it changed again.
-        _oldGameStateInt = GameStateInt;
-    }
-
-    public override void AssembleData(Writer writer, byte LOD)
-    {
-        // Write our data so that it can be sent to the other players in our playroom.
-        writer.Write(GameStateInt);
-    }
-
-    private void Update()
-    {
-        // If the value of our float has changed, sync it with the other players in our playroom.
-        if (GameStateInt != _oldGameStateInt)
-        {
-            // Store the updated value
-            _oldGameStateInt = GameStateInt;
-
-            // Tell Alteruna Multiplayer that we want to commit our data.
-            Commit();
-
-        }
-
-        // Update the Synchronizable
-        base.SyncUpdate();
-    }
-}

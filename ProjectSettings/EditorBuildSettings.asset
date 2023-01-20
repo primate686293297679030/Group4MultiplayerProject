@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Developer/Anders/AndersTesting.unity
+    guid: 43db4fbe5a445234faf824e3aa781f97
   m_configObjects: {}
