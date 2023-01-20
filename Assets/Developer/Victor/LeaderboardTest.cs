@@ -51,7 +51,7 @@ public class LeaderboardTest : Synchronizable
     private void Start()
     {
         goal = GameObject.Find("WinningBox");
-        PlayerControllerTest.OnPlayerJoined += GetPlayerTransforms;
+        PlayerController.OnPlayerJoined += GetPlayerTransforms;
         multiplayer = FindObjectOfType<Multiplayer>();
         if (multiplayer.Me == multiplayer.GetUser(0))
         {
