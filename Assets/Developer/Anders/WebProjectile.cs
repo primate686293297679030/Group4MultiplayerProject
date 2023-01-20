@@ -142,6 +142,7 @@ public class WebProjectile : MonoBehaviour
             
             ProcedureParameters parameters = new ProcedureParameters();
             parameters.Set("UserIndex", (int)avatar.Possessor.Index);
+            parameters.Set("UniqueID", GetComponent<UniqueID>().UIDString);
             multiplayer.InvokeRemoteProcedure("StickToPlayer", UserId.AllInclusive, parameters);
             //syncAttributes.SendData = false;
             //stickToPlayerRoutine = StartCoroutine(StickToPlayerRoutine(player));
@@ -150,6 +151,8 @@ public class WebProjectile : MonoBehaviour
 
     void StickToPlayer(ushort fromUser, ProcedureParameters parameters, uint callId, ITransportStreamReader processor)
     {
+        if (parameters.Get("UniqueID", "") != GetComponent<UniqueID>().UIDString) return; // todo: - try to compare guid later
+
         if (stuckPlayer != null)
         {
             stuckPlayer.slowMultiplier = 1;
