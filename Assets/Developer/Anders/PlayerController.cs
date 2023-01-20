@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using System.Security.Cryptography;
+using Alteruna;
+using Alteruna.Trinity;
 using EasingFunctions;
 using UnityEngine;
 using Avatar = Alteruna.Avatar;
@@ -18,6 +21,7 @@ public class PlayerController : MonoBehaviour
 
     [HideInInspector] public bool Activated;
     [HideInInspector] public float slowMultiplier = 1f;
+    [HideInInspector] public bool IsReadyToStart;
     [SerializeField] private float jumpForce = 15;
     [SerializeField] private float gravityForce = 45;
     [SerializeField] private float dashDuration = 0.36f;
@@ -35,11 +39,14 @@ public class PlayerController : MonoBehaviour
     private MeshRenderer meshRenderer;
     private PlayerTrail trailManager;
     private PlayerInput playerInput;
+    private Multiplayer multiplayer;
     private bool isDashing;
     private bool isJumpDashing;
-    private float dashProgress;
-    private Vector3 velocity;
+    private float dashProgress = 1f;
+    private bool isGrounded;
+    [SerializeField] private Vector3 velocity;
     private Vector2 previousInputVector = new Vector2(1, 0);
+    private Vector3 dashDirection = Vector3.right;
 
     void Start()
     {
@@ -49,7 +56,7 @@ public class PlayerController : MonoBehaviour
         characterController = GetComponentInChildren<CharacterController>();
         trailManager = GetComponentInChildren<PlayerTrail>();
         playerInput = GetComponent<PlayerInput>();
-
+        multiplayer = FindObjectOfType<Multiplayer>();
 
         InitializePlayer();
         if (avatar.IsMe)
@@ -71,9 +78,13 @@ public class PlayerController : MonoBehaviour
         {
             Instantiate(Resources.Load("GameManager") as GameObject);
         }
-
-        gameObject.name = "Player" + avatar.Possessor.Index;
+        if (multiplayer)
+        {
+            multiplayer.RegisterRemoteProcedure("SetRemotePlayerReady", SetRemotePlayerReady);
+        }
+        //gameObject.name = "Player" + avatar.Possessor.Index;
         OnPlayerJoined.Invoke(avatar);
+
     }
 
     void Update()
@@ -107,10 +118,19 @@ public class PlayerController : MonoBehaviour
             {
                 if (velocity.y < 0 && isDashing)
                     velocity.y -=
-                        gravityForce * Ease.In(dashProgress, 3) * Time.deltaTime * 0.66f; // less gravity force during dash
+                        gravityForce * Ease.In(dashProgress, 3) * Time.deltaTime *
+                        0.66f; // less gravity force during dash
                 else
                     velocity.y -= gravityForce * Time.deltaTime;
+                isGrounded = false;
             }
+            else if (characterController.isGrounded && !isGrounded)
+            {
+                isGrounded = true;
+                if (velocity.y < -5)
+                    velocity.y = 0;
+            }
+            
 
             characterController.Move((velocity * slowMultiplier) * Time.deltaTime);
 
@@ -120,13 +140,14 @@ public class PlayerController : MonoBehaviour
                 if (!isDashing && inputVector != Vector2.Zero && !isJumpDashing)
                 StartCoroutine(DashRoutine(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"))
                     .normalized));
-                else
+                else // cancel dash
                 {
                     StopAllCoroutines();
                     isDashing = false;
                     isJumpDashing = false;
                     velocity.x *= 0.25f;
                     velocity.z *= 0.25f;
+                    dashProgress = 1f;
                 }
             }
         }
@@ -138,66 +159,100 @@ public class PlayerController : MonoBehaviour
 
     void OnJumpAttempt()
     {
-        if (isDashing && characterController.isGrounded)
+        if (!avatar.IsMe) return;
+        if (isDashing && characterController.isGrounded && dashProgress < 0.8f)
         {
             StartCoroutine(JumpDashRoutine(velocity.normalized));
         }
-        else if (characterController.isGrounded && !isDashing && avatar.IsMe)
+        else if (characterController.isGrounded /*&& !isDashing*/ && dashProgress > 0.8f)
         {
             velocity.y = jumpForce;
+        }
+        else if (isJumpDashing)
+        {
+            StopAllCoroutines();
+            isDashing = false;
+            isJumpDashing = false;
+            velocity.x *= 0.25f;
+            velocity.z *= 0.25f;
+            dashProgress = 1f;
         }
     }
 
     void OnDoubleTap(KeyCode key)
     {
-        if (isDashing || slowMultiplier < 1f || !Activated) return;
+        if (/*isDashing ||*/ slowMultiplier < 1f || !Activated) return;
 
-        switch (key)
+        if (!isDashing)
         {
-            case KeyCode.LeftArrow:
+            switch (key)
             {
-                StartCoroutine(DashRoutine(Vector3.left));
-                break;
+                case KeyCode.LeftArrow:
+                {
+                    StartCoroutine(DashRoutine(Vector3.left));
+                    break;
+                }
+                case KeyCode.RightArrow:
+                {
+                    StartCoroutine(DashRoutine(Vector3.right));
+                    break;
+                }
+                case KeyCode.UpArrow:
+                {
+                    StartCoroutine(DashRoutine(Vector3.forward));
+                    break;
+                }
+                case KeyCode.DownArrow:
+                {
+                    StartCoroutine(DashRoutine(Vector3.back));
+                    break;
+                }
             }
-            case KeyCode.RightArrow:
+        }
+        else if (dashProgress < 0.1f)
+        {
+            switch (key)
             {
-                StartCoroutine(DashRoutine(Vector3.right));
-                break;
-            }
-            case KeyCode.UpArrow:
-            {
-                StartCoroutine(DashRoutine(Vector3.forward));
-                break;
-            }
-            case KeyCode.DownArrow:
-            {
-                StartCoroutine(DashRoutine(Vector3.back));
-                break;
+                case KeyCode.LeftArrow:
+                {
+                    dashDirection = (dashDirection + Vector3.left).normalized;
+                    break;
+                }
+                case KeyCode.RightArrow:
+                {
+                    dashDirection = (dashDirection + Vector3.right).normalized;
+                    break;
+                }
+                case KeyCode.UpArrow:
+                {
+                    dashDirection = (dashDirection + Vector3.forward).normalized;
+                    break;
+                }
+                case KeyCode.DownArrow:
+                {
+                    dashDirection = (dashDirection + Vector3.back).normalized;
+                    break;
+                }
             }
         }
     }
 
-    //void OnShiftPress()
-    //{
-    //    if (isDashing || isJumpDashing)
-    //    {
-    //        StopAllCoroutines();
-    //        isDashing = false;
-    //        isJumpDashing = false;
-    //    }
-    //}
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("WinningBox"))
+        if (!avatar.IsMe) return;
+
+        if (other.gameObject.CompareTag("WinningBox") && GameStateManager.instance.GameState == State.DuringRace)
         {
             UpdateMaterials(winningMaterial);
-            GameManager.OnWin(gameObject);
+            GameManager.OnWin(avatar.Possessor.Index);
         }
     }
 
     private IEnumerator DashRoutine(Vector3 direction)
     {
         if (isJumpDashing) yield return null;
+
+        dashDirection = direction;
         float elapsedTime = 0f;
         isDashing = true;
         trailManager.ActivateTrails();
@@ -206,13 +261,13 @@ public class PlayerController : MonoBehaviour
             elapsedTime += Time.deltaTime;
             dashProgress = elapsedTime / dashDuration;
             float y = velocity.y;
-            velocity = direction * walkSpeed * dashCurve.Evaluate(dashProgress);
+            velocity = dashDirection * walkSpeed * dashCurve.Evaluate(dashProgress);
             velocity.y = y;
             yield return new WaitForEndOfFrame();
         }
 
         isDashing = false;
-        dashProgress = 0f;
+        dashProgress = 1f;
     }
 
     private IEnumerator JumpDashRoutine(Vector3 direction)
@@ -250,11 +305,12 @@ public class PlayerController : MonoBehaviour
         }
 
         isJumpDashing = false;
-        dashProgress = 0f;
+        dashProgress = 1f;
     }
 
-    private void UpdateMaterials(Material material, bool updateTrail = true)
+    public void UpdateMaterials(Material material = null, bool updateTrail = true)
     {
+        if (material == null) material = winningMaterial;
         meshRenderer.material = material;
         Transform updateMatTrans = transform.Find("UpdateMaterials");
         if (updateMatTrans != null)
@@ -291,23 +347,24 @@ public class PlayerController : MonoBehaviour
         Activated = true;
     }
 
-    // This can be used to force a new location, as simply changing position once will not work on all clients
-    public void LockPlayerPosition(Vector3 position, float duration)
+    public void SetPlayerReady(bool isReady)
     {
-        StartCoroutine(LockPlayerRoutine(position, duration));
+        if (!avatar.IsMe) return;
+
+        var parameters = new ProcedureParameters();
+        parameters.Set("IsReady", isReady);
+        parameters.Set("UserId", avatar.Possessor.Index);
+        multiplayer.InvokeRemoteProcedure("SetRemotePlayerReady", UserId.AllInclusive, parameters);
+        IsReadyToStart = isReady;
     }
 
-    private IEnumerator LockPlayerRoutine(Vector3 position, float duration)
+    public void SetRemotePlayerReady(ushort fromUser, ProcedureParameters parameters, uint callId, ITransportStreamReader processor)
     {
-        Activated = false;
-        float elapsedTime = 0;
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            transform.position = position;
-            yield return new WaitForEndOfFrame();
-        }
-        Activated = true;
+        if (avatar.Possessor.Index != parameters.Get("UserId", (ushort)0)) 
+            return;
+
+        IsReadyToStart = parameters.Get("IsReady", true);
+        Debug.Log(transform.name + " is ready!");
     }
 
     void OnDestroy()

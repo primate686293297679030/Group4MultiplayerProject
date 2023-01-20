@@ -63,7 +63,8 @@ public class GameStateManager : AttributesSync
     public void CreatesRoom()
     {
         GameStateManager.instance.GameState = State.PreRace;
-        GameTimer.instance.Enable();
+        if (GameTimer.instance)
+            GameTimer.instance.Enable();
         GameStateManager.instance.NextState();
     }
     void RoomJoined(Multiplayer multiplayer, Room room, User user)
@@ -79,7 +80,8 @@ public class GameStateManager : AttributesSync
     }
     void OnPreRace()
     {
-       canvas.SetActive(true);
+        if (canvas)
+        canvas.SetActive(true);
     }
     IEnumerator PreRaceState()
     {

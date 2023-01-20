@@ -80,7 +80,7 @@ public class SmoothCamera : MonoBehaviour
             }
             blackImage.color = endColor;
         }
-
+        
         isFading = false;
     }
 }
