@@ -43,34 +43,6 @@ public class GameManager : AttributesSync
     
     public static void OnWin(ushort winnerID)
     {
-        //SmoothCamera camera = Camera.main.GetComponent<SmoothCamera>();
-        //if (camera.Target != winner.transform)
-        //{
-        //    camera.FollowingOwner = false;
-        //    Camera.main.GetComponent<SmoothCamera>().Target = winner.transform;
-        //}
-
-        //var playerControllers = FindObjectsOfType<PlayerController>();
-        //foreach (var controller in playerControllers)
-        //{
-        //    if (controller.gameObject != winner)
-        //    {
-        //       // controller.Activated = false;
-        //        GameObject _losingUIObject = Instantiate(Instance.losingUI);
-        //        _losingUIObject.transform.SetParent(controller.transform);
-        //        _losingUIObject.transform.localPosition = new Vector3(0, 1f, 0);
-        //    }
-        //}
-
-        //GameObject _winningUIObject = Instantiate(Instance.winningUI);
-        //_winningUIObject.transform.SetParent(winner.transform);
-        //_winningUIObject.transform.localPosition = new Vector3(0, 1f, 0);
-        
-        //Instance.InvokeRemoteMethod("UpdateGameState", (ushort)UserId.AllInclusive, (int)State.PostRace);
-        //Instance.Invoke("ResetGame", 3);
-        //Instance.Invoke("FadeOut", 1.98f);
-        //Instance.Invoke("FadeIn", 3);
-
         Instance.InvokeRemoteMethod("OnWinRemote", (ushort)UserId.AllInclusive, winnerID);
     }
 
@@ -125,7 +97,7 @@ public class GameManager : AttributesSync
         _winningUIObject.transform.SetParent(winner.transform);
         _winningUIObject.transform.localPosition = new Vector3(0, 1f, 0);
 
-        GameStateManager.instance.UpdateGameState((int)State.PostRace);
+        GameStateManager.instance.UpdateGameStateLocal((int)State.PostRace);
         //Instance.InvokeRemoteMethod("UpdateGameState", (ushort)UserId.AllInclusive, (int)State.PostRace);
         Instance.Invoke("ResetGame", 3);
         Instance.Invoke("FadeOut", 1.98f);
