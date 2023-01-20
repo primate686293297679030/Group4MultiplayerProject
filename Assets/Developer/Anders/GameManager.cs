@@ -43,19 +43,22 @@ public class GameManager : AttributesSync
     
     public static void OnWin(ushort winnerID)
     {
-        Instance.InvokeRemoteMethod("OnWinRemote", (ushort)UserId.AllInclusive, winnerID);
+        Instance.InvokeRemoteMethod("OnWinRemote", (ushort)UserId.All, winnerID);
+        Instance.OnWinLocal(winnerID);
     }
 
 
 
     public void ResetGame()
     {
-        Instance.InvokeRemoteMethod("RemoteResetGame", (ushort)UserId.AllInclusive);
+        Instance.InvokeRemoteMethod("RemoteResetGame");
+        Instance.ResetGameLocal();
     }
 
     public static void StartGame()
     {
-        Instance.InvokeRemoteMethod("RemoteStartGame", (ushort)UserId.AllInclusive);
+        Instance.InvokeRemoteMethod("RemoteStartGame");
+        Instance.StartGameLocal();
     }
 
     public void FadeIn()
@@ -70,6 +73,11 @@ public class GameManager : AttributesSync
     }
     [SynchronizableMethod]
     public void OnWinRemote(ushort winnerID)
+    {
+        OnWinLocal(winnerID);
+    }
+
+    private void OnWinLocal(ushort winnerID)
     {
         GameObject winner = Players.Find(avatar => avatar.Possessor == winnerID).gameObject;
         winner.GetComponent<PlayerController>().UpdateMaterials();
@@ -103,8 +111,14 @@ public class GameManager : AttributesSync
         Instance.Invoke("FadeOut", 1.98f);
         Instance.Invoke("FadeIn", 3);
     }
+
     [SynchronizableMethod]
     public void RemoteResetGame()
+    {
+        ResetGameLocal();
+    }
+
+    private void ResetGameLocal()
     {
         foreach (var player in Players)
         {
@@ -121,6 +135,11 @@ public class GameManager : AttributesSync
     [SynchronizableMethod]
     public void RemoteStartGame()
     {
+        StartGameLocal();   
+    }
+
+    private void StartGameLocal()
+    {
         foreach (var player in Players)
         {
             player.GetComponent<PlayerController>().InitializePlayer();
@@ -133,20 +152,4 @@ public class GameManager : AttributesSync
         GameStateManager.instance.UpdateGameStateLocal((int)State.DuringRace);
         //InvokeRemoteMethod("UpdateGameState", (ushort)UserId.AllInclusive, (int)State.DuringRace);
     }
-
-    //[SynchronizableMethod]
-    //public void UpdateGameState(int state)
-    //{
-    //    GameStateManager.instance.GameState = (State)state;
-    //}
-    //[SynchronizableMethod]
-    //public void FadeOutAllCameras()
-    //{
-    //    FindObjectOfType<SmoothCamera>().FadeOut(1);
-    //}
-    //[SynchronizableMethod]
-    //public void FadeInAllCameras()
-    //{
-    //    FindObjectOfType<SmoothCamera>().FadeIn(1);
-    //}
 }
