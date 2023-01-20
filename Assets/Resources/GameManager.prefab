@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6343796537621733801
+--- !u!1 &5611415743320687056
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6343796537621733807}
-  - component: {fileID: 6343796537621733800}
+  - component: {fileID: 7923857628792334195}
+  - component: {fileID: 6738716093145388148}
+  - component: {fileID: 726476184339291187}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -17,32 +18,48 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6343796537621733807
+--- !u!4 &7923857628792334195
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6343796537621733801}
+  m_GameObject: {fileID: 5611415743320687056}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 574.4568, y: 169.87341, z: -479.08783}
+  m_LocalPosition: {x: -34.939518, y: -50.161312, z: 8.276259}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6343796537621733800
+--- !u!114 &6738716093145388148
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6343796537621733801}
+  m_GameObject: {fileID: 5611415743320687056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1709514741, guid: 0ae8d181602a00248a82f64a684a1c88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  a: b965b14a-7f38-46e9-9239-6494fe2e2ab4
+--- !u!114 &726476184339291187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5611415743320687056}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a06bedacf66ffb441ac8fb38889d083c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Multiplayer: {fileID: 0}
+  UID: {fileID: 0}
+  Reliability: 1
   winningUI: {fileID: 918507033618197832, guid: a498ea9dcbf60ce46836eb566bb82f43, type: 3}
   losingUI: {fileID: 918507033618197832, guid: b082e3edbc132884bb89d3d90b5912d1, type: 3}
