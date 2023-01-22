@@ -5,10 +5,11 @@ using System.Collections;
 
 public class PlayerRespawn : MonoBehaviour
 {
+    public float respawnAt = -10f;
+
     [HideInInspector] public int checkpoint;
 
-    [SerializeField] float respawnAt = -10f;
-    [SerializeField] float fadeDuration = .5f;
+    [SerializeField] float fadeDuration = 1f;
 
     private bool isMe;
     private CharacterController cc;
@@ -54,6 +55,7 @@ public class PlayerRespawn : MonoBehaviour
         transform.position = position;
         cc.enabled = true;
         cc.Move(Vector3.zero);
+        //should also cancel jump dash
     }
 
     public void CallRespawn()

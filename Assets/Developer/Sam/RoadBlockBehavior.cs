@@ -3,26 +3,52 @@ using UnityEngine;
 public class RoadBlockBehavior : MonoBehaviour
 {
     [SerializeField] private float pushForce = 666f;
+
     private Rigidbody body;
+    private float respawnAt = -15f;
+    private Vector3 spawnPoint;
+    private Quaternion spawnOrientation;
+
+    private static readonly int Offset = Shader.PropertyToID("_Offset");
+
 
     private void Start()
     {
         body = GetComponent<Rigidbody>();
+        spawnPoint = transform.position;
+        spawnOrientation = transform.rotation;
+        SeedMaterial();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void SeedMaterial()
     {
-        bool isPlayer = collision.gameObject.TryGetComponent(out Alteruna.Avatar avatar);
+        MaterialPropertyBlock matBlock = new();
+        matBlock.SetFloat(Offset, Random.Range(-1000, 1000));
+        GetComponent<MeshRenderer>().SetPropertyBlock(matBlock);
+    }
+
+    private void Update()
+    {
+        if (transform.position.y < respawnAt)
+        {
+            transform.SetPositionAndRotation(spawnPoint, spawnOrientation);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        bool isPlayer = other.TryGetComponent(out Alteruna.Avatar avatar);
         if (!isPlayer || !avatar.IsMe)
         {
             return;
         }
 
-        Vector3 pushDir = (transform.position - collision.transform.position).normalized;
+        Vector3 pushDir = (transform.position - other.transform.position).normalized;
         body.AddForce(pushDir * pushForce);
 
-        bool hasRespawnComp = collision.gameObject.TryGetComponent(out PlayerRespawn respawnComp);
+        bool hasRespawnComp = other.TryGetComponent(out PlayerRespawn respawnComp);
         if (!hasRespawnComp) return;
+        respawnAt = respawnComp.respawnAt;
         respawnComp.CallRespawnWithFade(.5f);
     }
 }

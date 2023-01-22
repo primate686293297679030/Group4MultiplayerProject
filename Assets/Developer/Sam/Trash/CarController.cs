@@ -18,11 +18,11 @@ public class CarController : MonoBehaviour
         isMe = GetComponent<Alteruna.Avatar>().IsMe;
         body = GetComponent<Rigidbody>();
         sqrMaxLinearSpeed = maxLinearSpeed * maxLinearSpeed;
-        sqrMaxAngularSpeed= maxAngularSpeed * maxAngularSpeed;
+        sqrMaxAngularSpeed = maxAngularSpeed * maxAngularSpeed;
 
         if (isMe)
         {
-            Camera.main.gameObject.GetComponent<SmoothCamera2>().Target = transform;
+            Camera.main.gameObject.GetComponent<SmoothCamera>().Target = transform;
         }
     }
 
