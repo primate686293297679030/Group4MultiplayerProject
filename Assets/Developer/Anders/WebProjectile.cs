@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
+using System.Data.SqlTypes;
 using Alteruna;
 using Alteruna.Trinity;
 using EasingFunctions;
+using Unity.VisualScripting;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
@@ -28,18 +31,23 @@ public class WebProjectile : MonoBehaviour
     PlayerController stuckPlayer = null;
     //WebProjectileAttributes syncAttributes;
 
-    public void Initialize(int ID)
+    void Awake()
     {
-        //ownerID = ID;
         transform.SetParent(SpawnManager.WebProjectileParent);
         multiplayer = FindObjectOfType<Multiplayer>();
         syncAttributes = GetComponent<ProjectileSynchronizable>();
         rb = GetComponent<Rigidbody>();
+        multiplayer.RegisterRemoteProcedure("StickToPlayer", StickToPlayer);
+    }
+
+
+    public void Initialize(int ID)
+    {
+        //ownerID = ID;
         isOwnedByThisUser = multiplayer.Me.Index == ID;
 
         if (isOwnedByThisUser) 
             syncAttributes.OwnerID = ID;
-        multiplayer.RegisterRemoteProcedure("StickToPlayer", StickToPlayer);
     }
     public void Activate()
     {
@@ -115,7 +123,7 @@ public class WebProjectile : MonoBehaviour
     {
         if (!IsActive) return;
 
-        if (other.GetComponent<WebProjectile>() && stuckPlayer == null)
+        if (other.TryGetComponent(out WebProjectile otherProjectile) && stuckPlayer == null)
         {
             if (isOwnedByThisUser)
             {
@@ -137,29 +145,47 @@ public class WebProjectile : MonoBehaviour
         PlayerController player = other.transform.GetComponent<PlayerController>();
         if (player)
         {
-            //player.Activated = false;
-            //hasCollided = true;
-            
             ProcedureParameters parameters = new ProcedureParameters();
             parameters.Set("UserIndex", (int)avatar.Possessor.Index);
             parameters.Set("UniqueID", GetComponent<UniqueID>().UIDString);
             multiplayer.InvokeRemoteProcedure("StickToPlayer", UserId.AllInclusive, parameters);
-            //syncAttributes.SendData = false;
-            //stickToPlayerRoutine = StartCoroutine(StickToPlayerRoutine(player));
         }
     }
 
     void StickToPlayer(ushort fromUser, ProcedureParameters parameters, uint callId, ITransportStreamReader processor)
     {
-        if (parameters.Get("UniqueID", "") != GetComponent<UniqueID>().UIDString) return; // todo: - try to compare guid later
+        
+        Guid uniqueID =new Guid(parameters.Get("UniqueID", ""));
+        if (uniqueID != GetComponent<UniqueID>().UID)
+        {
+            // This is a workaround on the bug that a RPC can be called on the wrong instance of an object
+            // so if the unique ID on this object doesn't match the input ID -> look for other projectiles in the scene
+            // and if the ID match, call the function in that projectile instead
+            WebProjectile foundProjectile = null;
+            
+            foreach (var projectile in FindObjectsOfType<WebProjectile>())
+            {
+                if (projectile.GetComponent<UniqueID>().UID == uniqueID)
+                {
+                    foundProjectile = projectile;
+                    break;
+                }
+            }
 
+            if (foundProjectile != null)
+            {
+                foundProjectile.StickToPlayer(fromUser,parameters,callId,processor);
+                Debug.Log("UniqueID was wrong but a new attempt was made in another gameobject");
+            }
+            else Debug.Log("Attempted to find ID: "+ uniqueID + "\n but failed");
+            return;
+        }
+        
         if (stuckPlayer != null)
         {
             stuckPlayer.slowMultiplier = 1;
             transform.SetParent(null);
-            if (isOwnedByThisUser)
-                syncAttributes.OwnerID = -1;
-            //ownerID = -1;
+
             lifeTimeRemaining = lifeTime;
 
             if (stickToPlayerRoutine != null)
@@ -169,8 +195,13 @@ public class WebProjectile : MonoBehaviour
         int userIndex = parameters.Get("UserIndex", 0);
         GameObject player = GameObject.Find("Player" + userIndex);
         if (player == null) return;
-        
-        rb.velocity = Vector3.zero;
+
+        if (isOwnedByThisUser)
+        {
+            syncAttributes.OwnerID = -1;
+            rb.velocity = Vector3.zero;
+        }
+
         stickToPlayerRoutine = StartCoroutine(StickToPlayerRoutine(player.GetComponent<PlayerController>()));
     }
     IEnumerator StickToPlayerRoutine(PlayerController player)

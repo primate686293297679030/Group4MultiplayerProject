@@ -209,6 +209,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Activated: 1
   slowMultiplier: 1
+  IsReadyToStart: 0
   jumpForce: 16
   gravityForce: 45
   dashDuration: 0.33
@@ -302,6 +303,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  velocity: {x: 0, y: 0, z: 0}
 --- !u!114 &7036816266757587476
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -457,7 +459,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1124409774460673559}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
@@ -517,8 +519,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8275c261dbf3ccf49abdd1936797c5ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkpoint: 0
   respawnAt: -15
+  checkpoint: 0
+  fadeDuration: 1
 --- !u!1 &1972459778987601969
 GameObject:
   m_ObjectHideFlags: 0
