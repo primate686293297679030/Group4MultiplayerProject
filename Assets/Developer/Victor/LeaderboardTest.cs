@@ -8,42 +8,47 @@ using Avatar = Alteruna.Avatar;
 
 public class LeaderboardTest : Synchronizable
 {
-    public string synchronizedDistanceString = null;
-    private string _oldSynchronizedDistanceString = null;
-
-
+    public string leaderboardString;
+    
     private GameObject goal;
     private List<Transform> playerTransforms = new List<Transform>();
     private Dictionary<Avatar, LeaderboardEntry> avatarsAndEntries = new Dictionary<Avatar, LeaderboardEntry>();
     private int instantiationIndex = 1;
     private Multiplayer multiplayer;
     private bool isHost = false;
-    
+
     [SerializeField] private Vector3[] UIPositions = new Vector3[5];
     [SerializeField] private LeaderboardEntry entryPrefab;
 
     public override void DisassembleData(Reader reader, byte LOD)
     {
-        // int amountOfEntries = reader.ReadInt();
-        // for (int i = 0; i < amountOfEntries; i++)
-        // {
-        //     reader.ReadFloat();
-        //     reader.ReadString();
-        // }
-        synchronizedDistanceString = reader.ReadString();
-        _oldSynchronizedDistanceString = synchronizedDistanceString;
+        int amountOfEntries = reader.ReadInt();
+        for (int i = 0; i < amountOfEntries; i++)
+        {
+            float readDistance = reader.ReadFloat();
+            string readString = reader.ReadString();
+            ushort index = reader.ReadUshort();
+            LeaderboardEntry entryToFind = avatarsAndEntries.FirstOrDefault
+                (x => x.Key.Possessor.Index == index).Value;
+
+            if (entryToFind != null)
+            {
+                entryToFind.UpdateValues(readDistance, readString);
+            }
+            
+        }
     }
 
     public override void AssembleData(Writer writer, byte LOD)
     {
-        
-        // writer.Write(entries.Count);
-        // foreach (LeaderboardEntry entry in entries)
-        // {
-        //     writer.Write(entry.distanceToGoal);
-        //     writer.Write(entry.entryString);
-        // }
-        writer.Write(synchronizedDistanceString);
+        writer.Write(avatarsAndEntries.Count);
+        foreach (KeyValuePair<Avatar, LeaderboardEntry> entry in avatarsAndEntries)
+        {
+            writer.Write(entry.Value.distanceToGoal);
+            writer.Write(entry.Value.entryString);
+            // this is the player index for this avatar
+            writer.Write(entry.Key.Possessor.Index);
+        }
     }
 
     private void Start()
@@ -59,51 +64,54 @@ public class LeaderboardTest : Synchronizable
 
     private void Update()
     {
-        // create an if statement here that checks if host (Multiplayer.Index of some sort) IsMe
-        // and only do calculations if true
+        // check if current player is the host, only do calculations if true
+        if (!isHost)
+        {
+            return;
+        }
 
-        // if (!isHost)
-        // {
-        //     return;
-        // }
-        
         if (!goal || playerTransforms.Count < 2)
         {
             return;
         }
 
-        // compare entries on distanceToGoal, then update values (reintroduce UpdateValues method in
-        // LeaderboardEntry?)
+        // todo: compare entries on distanceToGoal, then update values (reintroduce UpdateValues method in LeaderboardEntry?)
         var listOfAvatarsAndEntries = avatarsAndEntries
             .OrderBy(key => key.Value.distanceToGoal).ToList();
         int placementIndex = 1;
-        synchronizedDistanceString = "Leaderboard: " + "\n";
+        leaderboardString = "Leaderboard: " + "\n";
         foreach (KeyValuePair<Avatar, LeaderboardEntry> pair in listOfAvatarsAndEntries)
         {
+            if (!pair.Key)
+            {
+                return;
+            }
+            avatarsAndEntries[pair.Key].entryString = "";
             avatarsAndEntries[pair.Key].transform.position = UIPositions[placementIndex - 1];
             avatarsAndEntries[pair.Key].distanceToGoal =
                 Vector3.Distance(pair.Key.transform.position, goal.transform.position);
             avatarsAndEntries[pair.Key].entryString +=
-                (placementIndex + ": " + (pair.Key.IsMe ? "Me " : "Other player #")) + instantiationIndex +
+                placementIndex + ": " + pair.Key.Possessor.Name + " " +
                 avatarsAndEntries[pair.Key] +
                 "\n";
             placementIndex++;
         }
-        
-        if (synchronizedDistanceString != _oldSynchronizedDistanceString)
-        {
-            _oldSynchronizedDistanceString = synchronizedDistanceString;
 
-            Commit();
+        foreach (KeyValuePair<Avatar, LeaderboardEntry> entry in avatarsAndEntries)
+        {
+            if (entry.Value.hasChanged)
+            {
+                Commit();
+                entry.Value.hasChanged = false;
+            }
         }
 
         base.SyncUpdate();
     }
 
-    // todo: sort entries in UI
     // todo: synchronization?
     // todo: fix avatar null check
-    
+
     // this gets called on player join
     public void GetPlayerTransforms(Avatar avatar)
     {
@@ -117,12 +125,6 @@ public class LeaderboardTest : Synchronizable
             playerTransforms.Add(avatar.transform);
 
             Vector3 positionToInstantiateAt = new Vector3(100f, 250f, 0f);
-            // if (instantiationIndex > 1)
-            // {
-            //     positionToInstantiateAt = new Vector3(positionToInstantiateAt.x,
-            //         positionToInstantiateAt.y - instantiationIndex * 20f,
-            //         positionToInstantiateAt.z);
-            // }
 
             LeaderboardEntry entry =
                 Instantiate(entryPrefab, positionToInstantiateAt, Quaternion.identity,

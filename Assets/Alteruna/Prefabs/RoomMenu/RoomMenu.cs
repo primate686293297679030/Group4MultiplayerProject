@@ -123,7 +123,7 @@ public class RoomMenu : MonoBehaviour
             _aump.RoomLeft.AddListener(LeftRoom);
             
             StartButton.onClick.AddListener(() => { _aump.JoinOnDemandRoom(); });
-            StartButton.onClick.AddListener(() => {GameStateManager.instance.CreatesRoom();});
+            // StartButton.onClick.AddListener(() => {GameStateManager.instance.CreatesRoom();});
             LeaveButton.onClick.AddListener(() => { _aump.CurrentRoom?.Leave(); });
         }
 

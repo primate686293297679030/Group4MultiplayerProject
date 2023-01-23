@@ -24,8 +24,6 @@ public class GameStateManager : AttributesSync
     public static GameStateManager instance;
     public State GameState;
     Alteruna.Multiplayer multiplayer;
-   
-    [SerializeField] GameObject canvas;
     
     public UnityAction playerCreatesRoom;
 
@@ -80,8 +78,7 @@ public class GameStateManager : AttributesSync
     }
     void OnPreRace()
     {
-        if (canvas)
-        canvas.SetActive(true);
+        
     }
     IEnumerator PreRaceState()
     {

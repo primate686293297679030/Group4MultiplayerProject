@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class LeaderboardEntry : Synchronizable
+public class LeaderboardEntry : MonoBehaviour
 {
    
     [SerializeField]
@@ -19,40 +19,27 @@ public class LeaderboardEntry : Synchronizable
     public float distanceToGoal;
     private float _oldDistanceToGoal;
 
-    public override void AssembleData(Writer writer, byte LOD = 100)
-    {
-        writer.Write(entryString);
-        writer.Write(distanceToGoal);
-    }
-
-    public override void DisassembleData(Reader reader, byte LOD = 100)
-    {
-        entryString = reader.ReadString();
-        _oldEntryString = entryString;
-        
-        distanceToGoal = reader.ReadFloat();
-        _oldDistanceToGoal = distanceToGoal;
-    }
-
+    public bool hasChanged = false;
+    
     private void Update()
     {
         displayText.text = entryString;
         progressBar.fillAmount = 1f - (distanceToGoal / 100f);
         
-        if (entryString != _oldEntryString)
+        if (entryString != _oldEntryString || !distanceToGoal.Equals(_oldDistanceToGoal))
         {
             _oldEntryString = entryString;
-
-            Commit();
-        }
-        base.SyncUpdate();
-        
-        if (!distanceToGoal.Equals(_oldDistanceToGoal))
-        {
             _oldDistanceToGoal = distanceToGoal;
-
-            Commit();
+            hasChanged = true;
         }
-        base.SyncUpdate();
+    }
+
+    public void UpdateValues(float newDistance, string newString)
+    {
+        _oldEntryString = newString;
+        entryString = newString;
+
+        _oldDistanceToGoal = newDistance;
+        distanceToGoal = newDistance;
     }
 }
