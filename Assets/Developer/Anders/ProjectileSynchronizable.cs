@@ -1,4 +1,6 @@
 using Alteruna;
+using Unity.VisualScripting;
+using UnityEngine;
 
 /// <summary>
 /// An extension of rigidbodysynchronizable
@@ -11,9 +13,16 @@ public class ProjectileSynchronizable : RigidbodySynchronizable
 
     // Used to store the previous version of our data so that we know when it has changed.
     private int oldOwnerID;
+    private Rigidbody rb;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
 
     public override void DisassembleData(Reader reader, byte LOD)
     {
+        if (rb == null) return;
         // Set our data to the updated value we have recieved from another player.
         OwnerID = reader.ReadInt();
 
@@ -24,6 +33,7 @@ public class ProjectileSynchronizable : RigidbodySynchronizable
 
     public override void AssembleData(Writer writer, byte LOD)
     {
+        if (rb == null) return;
         // Write our data so that it can be sent to the other Players in our playroom.
         writer.Write(OwnerID);
         base.AssembleData(writer, LOD);
@@ -31,6 +41,7 @@ public class ProjectileSynchronizable : RigidbodySynchronizable
 
     private void Update()
     {
+        if (rb == null) return;
         // If the value of our float has changed, sync it with the other Players in our playroom.
         if (OwnerID != oldOwnerID)
         {

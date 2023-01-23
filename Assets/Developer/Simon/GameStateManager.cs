@@ -53,7 +53,8 @@ public class GameStateManager : AttributesSync
     }  
     IEnumerator PreRaceState()
     {
-        PreRace();
+        if (PreRace != null)
+            PreRace();
         Debug.Log("PreGame: Enter");
         while (GameState == State.PreRace)
         {
@@ -65,7 +66,8 @@ public class GameStateManager : AttributesSync
 
     IEnumerator DuringRaceState()
     {
-        OnStartRace();
+        if (OnStartRace != null)
+            OnStartRace();
         Debug.Log("DuringGame: Enter");
         while (GameState == State.DuringRace)
         {
@@ -77,7 +79,8 @@ public class GameStateManager : AttributesSync
 
     IEnumerator PostRaceState()
     {
-        PostRace();
+        if (PostRace != null)
+            PostRace();
         Debug.Log("PostRace: Enter");
         while (GameState == State.PostRace)
         {

@@ -26,6 +26,8 @@ public class StartMenu : AttributesSync
             playerTextMap.Add(avatar, textObject);
             textObject.GetComponentInChildren<Text>().text = avatar.Possessor.Name;
             textObject.transform.localPosition = new Vector3(0, 2f, 0);
+
+            Invoke("UpdateTextsLocal", 0.1f);
         };
         PlayerController.OnPlayerLeft += (avatar) =>
         {
@@ -54,6 +56,7 @@ public class StartMenu : AttributesSync
         GameStateManager.instance.NextState(); // <--- TEMP: STATE MANAGER SHOULDN'T START HERE
         if (!environmentToActivate)
             environmentToActivate = GameObject.Find("Environment");
+        
     }
     public void OnReadyButtonPressed()
     {
@@ -136,6 +139,24 @@ public class StartMenu : AttributesSync
     private void UpdateTexts()
     {
         InvokeRemoteMethod("UpdateTextsRemote", (ushort)UserId.AllInclusive);
+    }
+    private void UpdateTextsLocal()
+    {
+        foreach (var player in playerTextMap)
+        {
+            Text[] texts = player.Value.GetComponentsInChildren<Text>();
+
+            if (player.Key.GetComponent<PlayerController>().IsReadyToStart)
+            {
+                texts[1].text = "is Ready!";
+                texts[1].color = Color.green;
+            }
+            else
+            {
+                texts[1].text = "Not Ready";
+                texts[1].color = Color.red;
+            }
+        }
     }
 
     [SynchronizableMethod]

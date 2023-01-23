@@ -36,7 +36,12 @@ public class GameManager : AttributesSync
         {
             // this felt more safe, to ensure that all players are included in each client... but probably not necessary
             Players = FindObjectsOfType<Avatar>().ToList();
-            // Players.Add(avatar);
+            foreach (var player in Players)
+            {
+                if (!player) continue;
+                if (player.IsMe)
+                    player.GetComponent<PlayerController>().SetPlayerReady(player.GetComponent<PlayerController>().IsReadyToStart);
+            }
             Debug.Log(avatar.name + " has joined!");
         };
         PlayerController.OnPlayerLeft += (avatar) => { if (Players.Contains(avatar)) Players.Remove(avatar); };

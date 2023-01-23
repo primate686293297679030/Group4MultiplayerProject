@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
 
     [HideInInspector] public bool Activated;
     [HideInInspector] public float slowMultiplier = 1f;
-    [HideInInspector] public bool IsReadyToStart;
+    public bool IsReadyToStart;
     [SerializeField] private float jumpForce = 15;
     [SerializeField] private float gravityForce = 45;
     [SerializeField] private float dashDuration = 0.36f;
@@ -88,12 +88,13 @@ public class PlayerController : MonoBehaviour
                 playerInput.OnJumpAttempt += OnJumpAttempt;
                // playerInput.OnShiftPress += OnShiftPress;
             }
+            if (multiplayer)
+            {
+                multiplayer.RegisterRemoteProcedure("SetRemotePlayerReady", SetRemotePlayerReady);
+            }
         }
 
-        if (multiplayer)
-        {
-            multiplayer.RegisterRemoteProcedure("SetRemotePlayerReady", SetRemotePlayerReady);
-        }
+
         gameObject.name = "Player" + avatar.Possessor.Index;
         OnPlayerJoined.Invoke(avatar);
 
@@ -358,10 +359,9 @@ public class PlayerController : MonoBehaviour
         trailManager.Initialize(avatar.IsMe);
         Activated = true;
     }
-
     public void SetPlayerReady(bool isReady)
     {
-        if (!avatar.IsMe) return;
+        if (!avatar.IsMe) return; 
 
         var parameters = new ProcedureParameters();
         parameters.Set("IsReady", isReady);
@@ -372,14 +372,23 @@ public class PlayerController : MonoBehaviour
 
     public void SetRemotePlayerReady(ushort fromUser, ProcedureParameters parameters, uint callId, ITransportStreamReader processor)
     {
-        if (avatar.Possessor.Index != parameters.Get("UserId", (ushort)0)) 
+        ushort userID = parameters.Get("UserId", (ushort)0);
+        if (avatar.Possessor.Index != userID)
+        {
+            foreach (var player in GameManager.Players)
+            {
+                if (player.Possessor.Index == userID)
+                {
+                    player.GetComponent<PlayerController>().SetRemotePlayerReady(fromUser,parameters,callId,processor);
+                }
+            }
             return;
-
+        }
         IsReadyToStart = parameters.Get("IsReady", true);
         Debug.Log(transform.name + " is ready!");
     }
 
-    void OnDestroy()
+    new void OnDestroy()
     {
         OnPlayerLeft.Invoke(avatar);
     }
