@@ -25,6 +25,7 @@ public class GameStateManager : AttributesSync
     public State GameState;
     Alteruna.Multiplayer multiplayer;
     
+
     public UnityAction playerCreatesRoom;
 
     public Action<State> OnStateUpdated;
@@ -48,38 +49,8 @@ public class GameStateManager : AttributesSync
     void Start()
     {
         multiplayer = FindObjectOfType<Multiplayer>();
-
-        multiplayer.RoomJoined.AddListener(RoomJoined);
-        multiplayer.OtherUserJoined.AddListener(OtherPlayerJoined);
-        PreRace +=OnPreRace;
-        OnStartRace += OnDuringRace;
-        //LobbyState.multiplayer.Connected.AddListener(playerJoined);
-        playerCreatesRoom += CreatesRoom;
-    }
-
-    //player presses Start on RoomMenu
-    public void CreatesRoom()
-    {
-        GameStateManager.instance.GameState = State.PreRace;
-        if (GameTimer.instance)
-            GameTimer.instance.Enable();
-        GameStateManager.instance.NextState();
-    }
-    void RoomJoined(Multiplayer multiplayer, Room room, User user)
-    {
-        
-        Quaternion target = Quaternion.Euler(14, 0, 0);
-   
-
-    }
-    void OtherPlayerJoined(Multiplayer multiplayer, User user)
-    {
-
-    }
-    void OnPreRace()
-    {
-        
-    }
+        OnStartRace += OnDuringRace; 
+    }  
     IEnumerator PreRaceState()
     {
         PreRace();
@@ -106,7 +77,7 @@ public class GameStateManager : AttributesSync
 
     IEnumerator PostRaceState()
     {
-
+        PostRace();
         Debug.Log("PostRace: Enter");
         while (GameState == State.PostRace)
         {
@@ -128,12 +99,7 @@ public class GameStateManager : AttributesSync
 
     }
  
-    public void OnStartButton(GameObject ui)
-    {
-        InvokeRemoteMethod("UpdateGameState", (ushort)UserId.AllInclusive, (int)State.DuringRace);
-        ui.SetActive(false);
-      
-    }
+ 
 
     [SynchronizableMethod]
     public void UpdateGameState(int state)
@@ -152,13 +118,6 @@ public class GameStateManager : AttributesSync
                                 System.Reflection.BindingFlags.NonPublic |
                                 System.Reflection.BindingFlags.Instance);
         StartCoroutine((IEnumerator)info.Invoke(this, null));
-    }
-
-    void Update()
-    {
-    
-  
-    
     }
 
 }
