@@ -5,7 +5,7 @@ using UnityEngine;
 using Alteruna;
 using Avatar = Alteruna.Avatar;
 
-public class LeaderboardTest : Synchronizable
+public class LeaderboardSynchronizable : Synchronizable
 {
     public string leaderboardString;
     
