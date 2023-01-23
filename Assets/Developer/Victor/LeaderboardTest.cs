@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Alteruna;
-using UnityEngine.UI;
 using Avatar = Alteruna.Avatar;
 
 public class LeaderboardTest : Synchronizable
@@ -75,7 +74,6 @@ public class LeaderboardTest : Synchronizable
             return;
         }
 
-        // todo: compare entries on distanceToGoal, then update values (reintroduce UpdateValues method in LeaderboardEntry?)
         var listOfAvatarsAndEntries = avatarsAndEntries
             .OrderBy(key => key.Value.distanceToGoal).ToList();
         int placementIndex = 1;
@@ -108,9 +106,6 @@ public class LeaderboardTest : Synchronizable
 
         base.SyncUpdate();
     }
-
-    // todo: synchronization?
-    // todo: fix avatar null check
 
     // this gets called on player join
     public void GetPlayerTransforms(Avatar avatar)
