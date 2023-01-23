@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 791676375236349337}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 60, y: 0, z: 0}
+  m_LocalPosition: {x: 130, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 5778415522743394452}
   - component: {fileID: 5336767036152160971}
   - component: {fileID: -4436536837585129650}
-  - component: {fileID: -6714781263411475944}
   m_Layer: 5
   m_Name: LeaderboardEntry
   m_TagString: Untagged
@@ -103,64 +102,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   a: 385606c5-13ea-4da3-b3a9-524d03e08d5e
---- !u!114 &-6714781263411475944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5336767036152160969}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec1f19f247205ff428f2b41721a8f756, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Multiplayer: {fileID: 0}
-  UID: {fileID: 0}
-  BucketBehaviors:
-  - Name: Min
-    NetLOD: 0
-    Frequency: -1
-    Pending: 0
-    LastUpdated: 0
-    NeverString: Never
-    RealtimeString: Realtime
-  - Name: Low
-    NetLOD: 1
-    Frequency: 0
-    Pending: 0
-    LastUpdated: 0
-    NeverString: Never
-    RealtimeString: Realtime
-  - Name: Mid
-    NetLOD: 2
-    Frequency: 0
-    Pending: 0
-    LastUpdated: 0
-    NeverString: Never
-    RealtimeString: Realtime
-  - Name: High
-    NetLOD: 3
-    Frequency: 0
-    Pending: 0
-    LastUpdated: 0
-    NeverString: Never
-    RealtimeString: Realtime
-  - Name: Max
-    NetLOD: 4
-    Frequency: 500
-    Pending: 0
-    LastUpdated: 0
-    NeverString: Never
-    RealtimeString: Realtime
-  synchronizedDistanceString: 
-  UIPositions:
-  - {x: 100, y: 250, z: 0}
-  - {x: 100, y: 220, z: 0}
-  - {x: 100, y: 190, z: 0}
-  - {x: 100, y: 160, z: 0}
-  - {x: 100, y: 130, z: 0}
-  entryPrefab: {fileID: 5336767036152160971}
 --- !u!1 &5336767036628858686
 GameObject:
   m_ObjectHideFlags: 0

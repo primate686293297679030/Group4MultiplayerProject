@@ -92,7 +92,7 @@ public class LeaderboardTest : Synchronizable
                 Vector3.Distance(pair.Key.transform.position, goal.transform.position);
             avatarsAndEntries[pair.Key].entryString +=
                 placementIndex + ": " + pair.Key.Possessor.Name + " " +
-                avatarsAndEntries[pair.Key] +
+                pair.Value.distanceToGoal.ToString("n2") +
                 "\n";
             placementIndex++;
         }
