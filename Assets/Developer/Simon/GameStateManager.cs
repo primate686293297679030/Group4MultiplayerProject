@@ -92,13 +92,13 @@ public class GameStateManager : AttributesSync
    
     void OnDuringRace()
     {
-        foreach(var player in GameManager.Players)
-        {
-            PlayerRespawn playerRespawn = player.GetComponent<PlayerRespawn>();
-            playerRespawn.checkpoint = 0;
-            playerRespawn.CallRespawn();
-
-        }
+        //foreach(var player in GameManager.Players)
+        //{
+        //    PlayerRespawn playerRespawn = player.GetComponent<PlayerRespawn>();
+        //    playerRespawn.checkpoint = 0;
+        //    playerRespawn.CallRespawn();
+        //
+        //}
 
     }
  

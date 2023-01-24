@@ -366,7 +366,7 @@ public class PlayerController : MonoBehaviour
         var parameters = new ProcedureParameters();
         parameters.Set("IsReady", isReady);
         parameters.Set("UserId", avatar.Possessor.Index);
-        multiplayer.InvokeRemoteProcedure("SetRemotePlayerReady", UserId.AllInclusive, parameters);
+        multiplayer.InvokeRemoteProcedure("SetRemotePlayerReady", UserId.All, parameters);
         IsReadyToStart = isReady;
     }
 
@@ -385,7 +385,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
         IsReadyToStart = parameters.Get("IsReady", true);
-        Debug.Log(transform.name + " is ready!");
+       // Debug.Log(transform.name + " is ready!");
     }
 
     new void OnDestroy()
