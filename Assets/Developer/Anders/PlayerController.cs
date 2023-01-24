@@ -47,6 +47,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector3 velocity;
     private Vector2 previousInputVector = new Vector2(1, 0);
     private Vector3 dashDirection = Vector3.right;
+    private float ccHeight;
 
     void Awake()
     {
@@ -94,7 +95,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-
+        ccHeight = characterController.height;
         gameObject.name = "Player" + avatar.Possessor.Index;
         OnPlayerJoined.Invoke(avatar);
 
@@ -259,6 +260,7 @@ public class PlayerController : MonoBehaviour
         velocity.x *= velocityMultiplier;
         velocity.z *= velocityMultiplier;
         dashProgress = 1f;
+        characterController.height = ccHeight;
     }
 
     private IEnumerator DashRoutine(Vector3 direction)
@@ -291,6 +293,7 @@ public class PlayerController : MonoBehaviour
         float spinRotation = 0;
         float spinSpeed = 750;
         direction = new Vector3(direction.x, 0, direction.z).normalized;
+        characterController.height = 1;
         while (elapsedTime < jumpDashDuration)
         {
             elapsedTime += Time.deltaTime;
@@ -317,6 +320,7 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
 
+        characterController.height = ccHeight;
         isJumpDashing = false;
         dashProgress = 1f;
     }
