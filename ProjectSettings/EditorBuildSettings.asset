@@ -8,7 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Developer/Anders/AndersTesting.unity
     guid: 43db4fbe5a445234faf824e3aa781f97
-  - enabled: 1
+  - enabled: 0
     path: Assets/Developer/Victor/VictorTestScene.unity
     guid: d38303ac09f6b7044bcd1090355ab545
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+    guid: 7de69737ddef64c459014533a3b2ab7a
   m_configObjects: {}

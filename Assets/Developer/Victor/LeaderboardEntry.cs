@@ -20,11 +20,17 @@ public class LeaderboardEntry : MonoBehaviour
     private float _oldDistanceToGoal;
 
     public bool hasChanged = false;
-    
+    private float maxDistance;
+
+    public void Initialize(GameObject goal)
+    {
+        maxDistance = Vector3.Distance(FindObjectOfType<Multiplayer>().AvatarSpawnLocations[0].position, goal.transform.position);
+    }
+
     private void Update()
     {
         displayText.text = entryString;
-        progressBar.fillAmount = 1f - (distanceToGoal / 100f);
+        progressBar.fillAmount = 1f - (distanceToGoal / maxDistance);
         
         if (entryString != _oldEntryString || !distanceToGoal.Equals(_oldDistanceToGoal))
         {

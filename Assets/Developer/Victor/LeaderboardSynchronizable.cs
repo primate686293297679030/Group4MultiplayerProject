@@ -8,8 +8,8 @@ using Avatar = Alteruna.Avatar;
 public class LeaderboardSynchronizable : Synchronizable
 {
     public string leaderboardString;
-    
-    private GameObject goal;
+
+    [SerializeField] private GameObject goal;
     private List<Transform> playerTransforms = new List<Transform>();
     private Dictionary<Avatar, LeaderboardEntry> avatarsAndEntries = new Dictionary<Avatar, LeaderboardEntry>();
     private int instantiationIndex = 1;
@@ -52,7 +52,8 @@ public class LeaderboardSynchronizable : Synchronizable
 
     private void Start()
     {
-        goal = GameObject.Find("WinningBox");
+        if (!goal)
+            goal = GameObject.Find("WinningBox");
         PlayerController.OnPlayerJoined += GetPlayerTransforms;
         multiplayer = FindObjectOfType<Multiplayer>();
         if (multiplayer.Me == multiplayer.GetUser(0))
@@ -77,7 +78,7 @@ public class LeaderboardSynchronizable : Synchronizable
         var listOfAvatarsAndEntries = avatarsAndEntries
             .OrderBy(key => key.Value.distanceToGoal).ToList();
         int placementIndex = 1;
-        leaderboardString = "Leaderboard: " + "\n";
+        //leaderboardString = "Leaderboard: " + "\n";
         foreach (KeyValuePair<Avatar, LeaderboardEntry> pair in listOfAvatarsAndEntries)
         {
             if (!pair.Key)
@@ -125,6 +126,7 @@ public class LeaderboardSynchronizable : Synchronizable
                 Instantiate(entryPrefab, positionToInstantiateAt, Quaternion.identity,
                     gameObject.transform);
             avatarsAndEntries.Add(avatar, entry);
+            entry.Initialize(goal);
             entry.GetComponent<RectTransform>().position = positionToInstantiateAt;
             Debug.Log(instantiationIndex);
             instantiationIndex++;
