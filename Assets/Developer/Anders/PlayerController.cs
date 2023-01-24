@@ -155,12 +155,7 @@ public class PlayerController : MonoBehaviour
                     .normalized));
                 else // cancel dash
                 {
-                    StopAllCoroutines();
-                    isDashing = false;
-                    isJumpDashing = false;
-                    velocity.x *= 0.25f;
-                    velocity.z *= 0.25f;
-                    dashProgress = 1f;
+                    StopDashing();
                 }
             }
         }
@@ -183,12 +178,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (isJumpDashing)
         {
-            StopAllCoroutines();
-            isDashing = false;
-            isJumpDashing = false;
-            velocity.x *= 0.25f;
-            velocity.z *= 0.25f;
-            dashProgress = 1f;
+            StopDashing();
         }
     }
 
@@ -259,6 +249,16 @@ public class PlayerController : MonoBehaviour
             UpdateMaterials(winningMaterial);
             GameManager.OnWin(avatar.Possessor.Index);
         }
+    }
+
+    public void StopDashing(float velocityMultiplier = 0.25f)
+    {
+        StopAllCoroutines();
+        isDashing = false;
+        isJumpDashing = false;
+        velocity.x *= velocityMultiplier;
+        velocity.z *= velocityMultiplier;
+        dashProgress = 1f;
     }
 
     private IEnumerator DashRoutine(Vector3 direction)
@@ -343,8 +343,9 @@ public class PlayerController : MonoBehaviour
         {
             if (owningMaterial)
                 UpdateMaterials(owningMaterial, false);
-            Camera myCamera = Camera.main;
-            myCamera.gameObject.GetComponent<SmoothCamera>().Target = transform;
+            SmoothCamera myCamera = Camera.main.GetComponent<SmoothCamera>();
+            //myCamera.Target = transform;
+            myCamera.Reset(transform);
         }
         else
         {

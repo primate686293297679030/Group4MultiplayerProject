@@ -13,8 +13,9 @@ public class StartMenu : AttributesSync
     [SerializeField] private GameObject playerTextPrefab;
     [SerializeField] private List<KeyValuePair<Avatar,GameObject>> playerTexts = new List<KeyValuePair<Avatar, GameObject>>();
     [SerializeField] private GameObject environmentToActivate;
+    [SerializeField] private GameObject readyButton;
     private Dictionary<Avatar,GameObject> playerTextMap = new Dictionary<Avatar,GameObject>();
-
+    
     private Canvas canvas;
 
     void Awake()
@@ -53,7 +54,7 @@ public class StartMenu : AttributesSync
         GameStateManager.instance.PreRace += ActivateMenu;
         GameStateManager.instance.OnStartRace += InactivateMenu;
         GameStateManager.instance.GameState = State.PreRace;
-        GameStateManager.instance.NextState(); // <--- TEMP: STATE MANAGER SHOULDN'T START HERE
+        if (!readyButton) readyButton = transform.Find("ReadyButton").gameObject;
         if (!environmentToActivate)
             environmentToActivate = GameObject.Find("Environment");
         
@@ -87,11 +88,8 @@ public class StartMenu : AttributesSync
 
         if (allReady)
         {
-            //GameStateManager.instance.GameState = State.DuringRace;
-            //GameStateManager.instance.NextState();
             GameManager.StartGame();
             InvokeRemoteMethod("InactivateMenuRemote", (ushort)UserId.AllInclusive);
-            //gameObject.SetActive(false);
         }
     }
 
@@ -115,7 +113,7 @@ public class StartMenu : AttributesSync
         // gameObject.SetActive(false);
         
         canvas.enabled = true;
-        transform.Find("ReadyButton").gameObject.SetActive(true);
+        readyButton.SetActive(true);
         foreach (var player in playerTextMap)
         {
             player.Value.SetActive(true);

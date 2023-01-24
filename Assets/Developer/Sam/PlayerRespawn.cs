@@ -15,6 +15,7 @@ public class PlayerRespawn : MonoBehaviour
     private CharacterController cc;
     private Multiplayer multiplayer;
     private SmoothCamera camBehaviour;
+    private PlayerController playerController;
     private bool fading;
 
     private void Start()
@@ -24,6 +25,7 @@ public class PlayerRespawn : MonoBehaviour
         isMe = GetComponent<Alteruna.Avatar>().IsMe;
         cc = GetComponent<CharacterController>();
         camBehaviour = Camera.main.GetComponent<SmoothCamera>();
+        playerController = GetComponent<PlayerController>();
 
         if (!isMe) return;
         Vector3 spawn = multiplayer.AvatarSpawnLocations[multiplayer.Me.Index].position;
@@ -55,7 +57,7 @@ public class PlayerRespawn : MonoBehaviour
         transform.position = position;
         cc.enabled = true;
         cc.Move(Vector3.zero);
-        //should also cancel jump dash
+        playerController.StopDashing(0f);
     }
 
     public void CallRespawn()

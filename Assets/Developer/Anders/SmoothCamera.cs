@@ -49,6 +49,13 @@ public class SmoothCamera : MonoBehaviour
             Vector3.SmoothDamp(transform.position, targetPos, ref velocity, moveSpeed * transitionMultiplier);
     }
 
+    public void Reset(Transform newTarget)
+    {
+        FollowingOwner = true;
+        Target = newTarget;
+        timeSpentFollowingOtherPlayer = 0;
+    }    
+    
     // fades the screen to black
     public void FadeOut(float duration)
     {

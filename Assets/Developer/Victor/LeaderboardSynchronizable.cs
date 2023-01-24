@@ -55,6 +55,7 @@ public class LeaderboardSynchronizable : Synchronizable
         if (!goal)
             goal = GameObject.Find("WinningBox");
         PlayerController.OnPlayerJoined += GetPlayerTransforms;
+        PlayerController.OnPlayerLeft += UpdateEntries;
         multiplayer = FindObjectOfType<Multiplayer>();
         if (multiplayer.Me == multiplayer.GetUser(0))
         {
@@ -120,7 +121,7 @@ public class LeaderboardSynchronizable : Synchronizable
 
             playerTransforms.Add(avatar.transform);
 
-            Vector3 positionToInstantiateAt = new Vector3(100f, 250f, 0f);
+            Vector3 positionToInstantiateAt = UIPositions[instantiationIndex];//new Vector3(100f, 250f, 0f);
 
             LeaderboardEntry entry =
                 Instantiate(entryPrefab, positionToInstantiateAt, Quaternion.identity,
@@ -128,8 +129,19 @@ public class LeaderboardSynchronizable : Synchronizable
             avatarsAndEntries.Add(avatar, entry);
             entry.Initialize(goal);
             entry.GetComponent<RectTransform>().position = positionToInstantiateAt;
-            Debug.Log(instantiationIndex);
             instantiationIndex++;
+        }
+    }
+
+    void UpdateEntries(Avatar avatar)
+    {
+        if (avatarsAndEntries[avatar])
+            Destroy(avatarsAndEntries[avatar].gameObject);
+        if (avatarsAndEntries.ContainsKey(avatar))
+        {
+            avatarsAndEntries.Remove(avatar);
+            playerTransforms.Remove(avatar.transform);
+            instantiationIndex--;
         }
     }
 }

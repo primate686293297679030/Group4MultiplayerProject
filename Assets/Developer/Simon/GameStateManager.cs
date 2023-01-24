@@ -12,8 +12,6 @@ using UnityEngine.UIElements;
         PreRace,
         DuringRace,
         PostRace,
-
-
     }
 
     
@@ -43,8 +41,9 @@ public class GameStateManager : AttributesSync
         else
         {
              Destroy(this);
+             return;
         }
- 
+        FindObjectOfType<Multiplayer>().RoomJoined.AddListener(OnRoomJoined);
     }
     void Start()
     {
@@ -89,7 +88,11 @@ public class GameStateManager : AttributesSync
         Debug.Log("PostGame: Exit");
         NextState();
     }
-   
+
+    public void OnRoomJoined(Multiplayer mp, Room room, User me)
+    {
+        NextState();
+    }
     void OnDuringRace()
     {
         //foreach(var player in GameManager.Players)

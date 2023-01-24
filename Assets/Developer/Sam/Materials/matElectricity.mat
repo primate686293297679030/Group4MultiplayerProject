@@ -102,8 +102,8 @@ Material:
     - _VSpeed: -0.4
     - _ZWrite: 1
     m_Colors:
-    - _BackColor: {r: 0.40392157, g: 0.40392157, b: 0.40392157, a: 1}
+    - _BackColor: {r: 0.46226418, g: 0, b: 0, a: 1}
     - _Color: {r: 0.5273525, g: 0.7710022, b: 0.9528302, a: 1}
-    - _ElectricityColor: {r: 0.35926187, g: 0.52525264, b: 0.6603774, a: 1}
+    - _ElectricityColor: {r: 1, g: 0.6972857, b: 0.4009434, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
