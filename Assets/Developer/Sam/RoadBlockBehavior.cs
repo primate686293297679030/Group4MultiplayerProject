@@ -1,3 +1,4 @@
+using Alteruna;
 using UnityEngine;
 
 public class RoadBlockBehavior : MonoBehaviour
@@ -8,13 +9,14 @@ public class RoadBlockBehavior : MonoBehaviour
     private float respawnAt = -15f;
     private Vector3 spawnPoint;
     private Quaternion spawnOrientation;
+    private Multiplayer multiplayer;
 
     private static readonly int Offset = Shader.PropertyToID("_Offset");
-
 
     private void Start()
     {
         body = GetComponent<Rigidbody>();
+        multiplayer = FindObjectOfType<Multiplayer>();
         spawnPoint = transform.position;
         spawnOrientation = transform.rotation;
         SeedMaterial();
@@ -32,13 +34,15 @@ public class RoadBlockBehavior : MonoBehaviour
         if (transform.position.y < respawnAt)
         {
             transform.SetPositionAndRotation(spawnPoint, spawnOrientation);
+            body.velocity = Vector3.zero;
+            body.angularVelocity = Vector3.zero;
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         bool isPlayer = other.TryGetComponent(out Alteruna.Avatar avatar);
-        if (!isPlayer || !avatar.IsMe)
+        if (!isPlayer || multiplayer.Me.Index != 0)
         {
             return;
         }
