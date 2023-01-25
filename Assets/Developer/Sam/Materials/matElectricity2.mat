@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: matElectricity
+  m_Name: matElectricity2
   m_Shader: {fileID: -6465566751694194690, guid: 02025c6af4f29904bb8585d4a9d1595d, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -82,12 +82,12 @@ Material:
     - _DetailNormalMapScale: 1
     - _Dissolver: 0.6
     - _DstBlend: 0
-    - _ElectricityScale: 8
+    - _ElectricityScale: 16.91
     - _ElectricityWidth: 0.01
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Intensity: 11
+    - _Intensity: 13.02
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -105,6 +105,6 @@ Material:
     m_Colors:
     - _BackColor: {r: 0.46226418, g: 0, b: 0, a: 1}
     - _Color: {r: 0.5273525, g: 0.7710022, b: 0.9528302, a: 1}
-    - _ElectricityColor: {r: 1, g: 0.6972857, b: 0.4009434, a: 1}
+    - _ElectricityColor: {r: 1, g: 0.91823655, b: 0.36470592, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

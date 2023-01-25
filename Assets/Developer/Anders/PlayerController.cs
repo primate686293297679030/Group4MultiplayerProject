@@ -151,13 +151,15 @@ public class PlayerController : MonoBehaviour
             // shift based dashing, will probably be removed
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
-                if (!isDashing && inputVector != Vector2.Zero && !isJumpDashing)
-                StartCoroutine(DashRoutine(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"))
-                    .normalized));
-                else // cancel dash
-                {
+                //if (!isDashing && inputVector != Vector2.Zero && !isJumpDashing)
+                //StartCoroutine(DashRoutine(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"))
+                //    .normalized));
+                //else // cancel dash
+                //{
+                //    StopDashing();
+                //}
+                if (isDashing || isJumpDashing)
                     StopDashing();
-                }
             }
         }
         else if (isDashing && !trailManager.IsActive)

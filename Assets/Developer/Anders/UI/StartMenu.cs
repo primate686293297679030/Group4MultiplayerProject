@@ -17,6 +17,7 @@ public class StartMenu : AttributesSync
     private Dictionary<Avatar,GameObject> playerTextMap = new Dictionary<Avatar,GameObject>();
     
     private Canvas canvas;
+    private Canvas roomMenuCanvas;
 
     void Awake()
     {
@@ -55,6 +56,7 @@ public class StartMenu : AttributesSync
         GameStateManager.instance.OnStartRace += InactivateMenu;
         GameStateManager.instance.GameState = State.PreRace;
         if (!readyButton) readyButton = transform.Find("ReadyButton").gameObject;
+        if (!roomMenuCanvas) roomMenuCanvas = GameObject.Find("Room Menu")?.GetComponent<Canvas>();
         if (!environmentToActivate)
             environmentToActivate = GameObject.Find("Environment");
         
@@ -107,6 +109,8 @@ public class StartMenu : AttributesSync
         UpdateTexts();
         if (environmentToActivate)
             environmentToActivate.SetActive(true);
+        if (roomMenuCanvas)
+            roomMenuCanvas.enabled = false;
     }
     private void ActivateMenu()
     {
@@ -121,6 +125,8 @@ public class StartMenu : AttributesSync
         UpdateTexts();
         if (environmentToActivate)
             environmentToActivate.SetActive(false);
+        if (roomMenuCanvas)
+            roomMenuCanvas.enabled = true;
     }
 
     [SynchronizableMethod]

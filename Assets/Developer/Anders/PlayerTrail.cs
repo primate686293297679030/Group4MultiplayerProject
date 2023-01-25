@@ -14,7 +14,9 @@ public class PlayerTrail : MonoBehaviour
     private Color color = new Color(0.25f, 1, 0.25f);
     public bool IsActive;
     private bool isOwner;
-    
+    [SerializeField] private Material ownGlowingTrailMat;
+    [SerializeField] private Material otherGlowingTrailMat;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,12 +24,16 @@ public class PlayerTrail : MonoBehaviour
         trailAttributes = GetComponent<TrailAttributesSync>();
         if (trails.Length > 0)
             UpdateTrails(0);
+
+
     }
 
     public void Initialize(bool owningPlayer)
     {
         color = owningPlayer ? new Color(0.25f, 1, 0.25f) : new Color(1, 0.25f, 0.25f);
         isOwner = owningPlayer;
+        transform.Find("GlowingTrail").GetComponent<TrailRenderer>().material =
+            isOwner ? ownGlowingTrailMat : otherGlowingTrailMat;
     }
 
     public void UpdateTrails(float dashProgress)

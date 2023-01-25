@@ -18,6 +18,7 @@ public class LeaderboardSynchronizable : Synchronizable
 
     [SerializeField] private Vector3[] UIPositions = new Vector3[5];
     [SerializeField] private LeaderboardEntry entryPrefab;
+    private Canvas canvas;
 
     public override void DisassembleData(Reader reader, byte LOD)
     {
@@ -57,6 +58,7 @@ public class LeaderboardSynchronizable : Synchronizable
         PlayerController.OnPlayerJoined += GetPlayerTransforms;
         PlayerController.OnPlayerLeft += UpdateEntries;
         multiplayer = FindObjectOfType<Multiplayer>();
+        canvas = GetComponent<Canvas>();
         if (multiplayer.Me == multiplayer.GetUser(0))
         {
             isHost = true;
@@ -131,6 +133,11 @@ public class LeaderboardSynchronizable : Synchronizable
             entry.GetComponent<RectTransform>().position = positionToInstantiateAt;
             instantiationIndex++;
         }
+
+        if (GameObject.FindGameObjectsWithTag("Player").Length <= 1)
+            canvas.enabled = false;
+        else if (!canvas.enabled)
+            canvas.enabled = true;
     }
 
     void UpdateEntries(Avatar avatar)
