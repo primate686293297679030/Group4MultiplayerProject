@@ -42,7 +42,7 @@ public class RoadBlockBehavior : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         bool isPlayer = other.TryGetComponent(out Alteruna.Avatar avatar);
-        if (!isPlayer || multiplayer.Me.Index != 0)
+        if (!isPlayer || !avatar.IsMe)
         {
             return;
         }
