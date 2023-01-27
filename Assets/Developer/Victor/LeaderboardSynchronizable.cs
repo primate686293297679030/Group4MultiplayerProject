@@ -134,10 +134,10 @@ public class LeaderboardSynchronizable : Synchronizable
             instantiationIndex++;
         }
 
-        if (GameObject.FindGameObjectsWithTag("Player").Length <= 1)
-            canvas.enabled = false;
-        else if (!canvas.enabled)
-            canvas.enabled = true;
+        //if (GameObject.FindGameObjectsWithTag("Player").Length <= 1)
+        //    canvas.enabled = false;
+        //else if (!canvas.enabled)
+        //    canvas.enabled = true;
     }
 
     void UpdateEntries(Avatar avatar)
