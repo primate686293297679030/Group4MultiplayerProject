@@ -12,7 +12,7 @@ public class PlayerAbilities : MonoBehaviour
 {
     [SerializeField] private GameObject projectilePrefab;
     private PlayerInput playerInput;
-    private float cooldownLength = 1;
+    private float cooldownLength = 3;
     private float cooldownRemaining;
     private PlayerController player;
 

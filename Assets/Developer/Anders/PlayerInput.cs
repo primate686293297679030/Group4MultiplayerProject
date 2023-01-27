@@ -39,7 +39,7 @@ public class PlayerInput : MonoBehaviour
                 CheckKeyTiming(KeyCode.DownArrow);
             }
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C))
             {
                 OnJumpAttempt();
             }
